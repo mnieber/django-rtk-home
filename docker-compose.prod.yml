@@ -1,0 +1,35 @@
+version: "3.7"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    depends_on:
+    - postgres
+    env_file:
+    - ./env/postgres.env
+    environment:
+    - DJANGO_SETTINGS_MODULE=app.settings.prod
+    image: keycloak_auth_backend
+    ports:
+    - 8000:8000
+    volumes: []
+  keycloak:
+    depends_on:
+    - postgres
+    env_file:
+    - ./env/keycloak.env
+    image: jboss/keycloak
+    ports:
+    - 8080:8080
+    volumes: []
+  postgres:
+    depends_on: []
+    env_file:
+    - ./env/postgres.env
+    image: postgres:11.5
+    ports:
+    - 5432:5432
+    volumes: []
+volumes: {}

@@ -1,0 +1,47 @@
+version: "3.7"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command: sleep infinity
+    depends_on:
+    - postgres
+    env_file:
+    - ./env/postgres.env
+    environment:
+    - DJANGO_SETTINGS_MODULE=app.settings.dev
+    image: keycloak_auth_backend_dev
+    ports:
+    - 8000:8000
+    volumes:
+    - ./backend:/app/src
+    - /opt/keycloak_auth/backend/fish_history:/root/.local/share/fish/fish_history
+    - $HOME/.config/pudb:/root/.config/pudb
+    - /opt/keycloak_auth/backend/ipython:/root/.ipython
+    - /opt/keycloak_auth/backend/static:/app/static
+    - /opt/keycloak_auth/backend/pytest_report.html:/app/pytest_report.html
+    - /opt/keycloak_auth/backend/assets:/app/assets
+    - backend_venv:/app/env
+  keycloak:
+    depends_on:
+    - postgres
+    env_file:
+    - ./env/keycloak.env
+    image: jboss/keycloak
+    ports:
+    - 8080:8080
+    volumes: []
+  postgres:
+    depends_on: []
+    env_file:
+    - ./env/postgres.env
+    image: postgres:11.5
+    ports:
+    - 5432:5432
+    volumes:
+    - postgres_data:/var/lib/postgresql/data
+volumes:
+  backend_venv: {}
+  postgres_data: {}

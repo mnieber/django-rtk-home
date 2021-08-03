@@ -1,0 +1,22 @@
+FROM python:3
+
+RUN pip install --upgrade pip
+
+# install dev pkg dependencies
+RUN apt-get update && apt-get install -y \
+    fish                ` # via fish` \
+    make                ` # via makefile` \
+    postgresql-client   ` # via django-app`
+
+# install dev pip dependencies
+RUN pip3 install \
+    black               ` # via black` \
+    isort               ` # via isort` \
+    pgcli==2.1.1        ` # via django-app` \
+    pip-tools           ` # via pip-compile`
+
+# create a python venv that we can easily store inside a docker volume
+RUN python3 -m venv /app/env
+ENV PATH="/app/env/bin:${PATH}"
+
+WORKDIR /app/src
