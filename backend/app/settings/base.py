@@ -37,8 +37,11 @@ GRAPHENE = {
 
 DJANGO_PLUGGABLE_AUTH = {
     "BACKEND": "django_pluggable_auth.backends.DefaultBackend",
-    "MIXIN_CLASSES": {
+    "DANGEROUSLY_EXPOSE_TOKENS": True,
+    "CLASSES": {
         "RegisterAccount": "users.auth_mixins.RegisterAccount",
-        "RegisterAccountFormType": "users.auth_mixins.RegisterAccountFormType",
+        "ActivateAccount": "users.auth_mixins.ActivateAccount",
+        "RequestPasswordReset": "users.auth_mixins.RequestPasswordReset",
+        "ResetPassword": "users.auth_mixins.ResetPassword",
     },
 }

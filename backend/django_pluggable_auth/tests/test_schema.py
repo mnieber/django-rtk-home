@@ -1,9 +1,11 @@
 import pytest
 from django.test import Client
 
-from django_pluggable_auth.models import ActivationToken
+from django_pluggable_auth.models import ActivationToken, PasswordResetToken
 
-activation_token_dict = dict(email="user@test.com", token="123")
+activation_token_dict = dict(
+    email="user@test.com", token="123", accepts_terms=True, terms_accepted="1.0.0"
+)
 
 
 class TestSchema:
@@ -18,147 +20,138 @@ class TestSchema:
         return activation_token
 
     @pytest.mark.django_db()
-    def test_query_activation_token(
-        self, client: Client, activation_token: ActivationToken
-    ):
-        query = """query {{
-            activationTokens {{
-                email,
-                token,
-            }}
-        }}""".format()
-        response = client.get("/graphql/", dict(query=query))
-
-        # check that the response is as expected
-        assert response.json() == {
-            "data": {"activationTokens": [activation_token_dict]}
-        }
-
-    @pytest.mark.django_db()
     def test_register_account(self, client: Client):
-        __import__("pudb").set_trace()
         query = """mutation {{
             registerAccount(
-                form: {{
-                    email: "{email}",
-                    password: "{password}",
-                    acceptsTerms: {acceptsTerms},
-                    termsAccepted: "{termsAccepted}",
-                }}
+                email: "{email}",
+                acceptsTerms: {acceptsTerms},
+                termsAccepted: "{termsAccepted}",
             ) {{
                 success,
-                greeting
+                errors
             }}
         }}""".format(
-            email="mnieber@gmail.com",
-            password="foo",
+            email="tester@test.com",
             acceptsTerms="true",
             termsAccepted="1.0.0",
         )
         response = client.post("/graphql/", dict(query=query))
-        __import__("pudb").set_trace()
 
         # check that the response is as expected
-        assert response.json() == {"data": {"registerAccount": {"success": True}}}
+        assert response.json() == {
+            "data": {"registerAccount": {"success": True, "errors": {}}}
+        }
 
-    # @pytest.mark.django_db()
-    # def test_activate_account(self, client: Client):
-    #     response = client.post(
-    #         "/graphql/",
-    #         dict(
-    #             query="""mutation {
-    #                 activateAccount(
-    #                     token: {token},
-    #                 ) {
-    #                   success
-    #                 }
-    #             }""".format(
-    #                 token="foo",
-    #             )
-    #         ),
-    #     )
+        activation_token = ActivationToken.objects.get(email="tester@test.com")
 
-    #     # check that the response is as expected
-    #     assert response.json() == {"data": {"register": {"success": True}}}
+        query = """mutation {{
+            activateAccount(
+                token: "{token}"
+                password: "{password}",
+            ) {{
+                success,
+                errors
+            }}
+        }}""".format(
+            token=activation_token.token,
+            password="foobarbaz123",
+        )
+        response = client.post("/graphql/", dict(query=query))
 
-    # @pytest.mark.django_db()
-    # def test_request_password_reset(self, client: Client):
-    #     response = client.post(
-    #         "/graphql/",
-    #         dict(
-    #             query="""mutation {
-    #                 requestPasswordReset(
-    #                     email: {email},
-    #                 ) {
-    #                   success
-    #                 }
-    #             }""".format(
-    #                 email="foo",
-    #             )
-    #         ),
-    #     )
+        # check that the response is as expected
+        assert response.json() == {
+            "data": {"activateAccount": {"success": True, "errors": {}}}
+        }
 
-    #     # check that the response is as expected
-    #     assert response.json() == {"data": {"register": {"success": True}}}
+        query = """mutation {{
+            requestPasswordReset(
+                email: "{email}",
+            ) {{
+                success,
+                errors
+            }}
+        }}""".format(
+            email="tester@test.com",
+        )
+        response = client.post("/graphql/", dict(query=query))
 
-    # @pytest.mark.django_db()
-    # def test_reset_password(self, client: Client):
-    #     response = client.post(
-    #         "/graphql/",
-    #         dict(
-    #             query="""mutation {
-    #                 resetPassword(
-    #                     token: {token},
-    #                     password: {password},
-    #                 ) {
-    #                   success
-    #                 }
-    #             }""".format(
-    #                 token="foo",
-    #                 password="foo",
-    #             )
-    #         ),
-    #     )
+        # check that the response is as expected
+        assert response.json() == {
+            "data": {"requestPasswordReset": {"success": True, "errors": {}}}
+        }
 
-    #     # check that the response is as expected
-    #     assert response.json() == {"data": {"register": {"success": True}}}
+        password_reset_token = PasswordResetToken.objects.get(email="tester@test.com")
 
-    # @pytest.mark.django_db()
-    # def test_sign_in(self, client: Client):
-    #     response = client.post(
-    #         "/graphql/",
-    #         dict(
-    #             query="""mutation {
-    #                 signIn(
-    #                     email: {email},
-    #                     password: {password},
-    #                 ) {
-    #                   success
-    #                 }
-    #             }""".format(
-    #                 email="foo",
-    #                 password="foo",
-    #             )
-    #         ),
-    #     )
+        query = """mutation {{
+            resetPassword(
+                token: "{token}",
+                password: "{password}",
+            ) {{
+                success,
+                errors
+            }}
+        }}""".format(
+            token=password_reset_token.token,
+            password="bar",
+        )
 
-    #     # check that the response is as expected
-    #     assert response.json() == {"data": {"register": {"success": True}}}
+        response = client.post("/graphql/", dict(query=query))
 
-    # @pytest.mark.django_db()
-    # def test_sign_out(self, client: Client):
-    #     response = client.post(
-    #         "/graphql/",
-    #         dict(
-    #             query="""mutation {
-    #                 signOut(
+        # check that the response is as expected
+        assert response.json() == {
+            "data": {"resetPassword": {"success": True, "errors": {}}}
+        }
 
-    #                 ) {
-    #                   success
-    #                 }
-    #             }""".format()
-    #         ),
-    #     )
+    @pytest.mark.django_db()
+    def test_bad_email(self, client: Client):
+        query = """mutation {{
+            registerAccount(
+                email: "{email}",
+                acceptsTerms: {acceptsTerms},
+                termsAccepted: "{termsAccepted}",
+            ) {{
+                success,
+                errors
+            }}
+        }}""".format(
+            email="tester.com",
+            acceptsTerms="true",
+            termsAccepted="1.0.0",
+        )
+        response = client.post("/graphql/", dict(query=query))
 
-    #     # check that the response is as expected
-    #     assert response.json() == {"data": {"register": {"success": True}}}
+        # check that the response is as expected
+        assert response.json() == {
+            "data": {
+                "registerAccount": {
+                    "success": False,
+                    "errors": {"email": ["Invalid email"]},
+                }
+            }
+        }
+
+    @pytest.mark.django_db()
+    def test_bad_password(self, client: Client, activation_token: ActivationToken):
+        query = """mutation {{
+            activateAccount(
+                token: "{token}"
+                password: "{password}",
+            ) {{
+                success,
+                errors
+            }}
+        }}""".format(
+            token=activation_token.token,
+            password="foo",
+        )
+        response = client.post("/graphql/", dict(query=query))
+
+        # check that the response is as expected
+        assert response.json() == {
+            "data": {
+                "activateAccount": {
+                    "success": False,
+                    "errors": {"password": ["Too short"]},
+                }
+            }
+        }

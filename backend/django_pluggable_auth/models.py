@@ -1,8 +1,21 @@
+import uuid
+
 from django.db import models
 
-from app.models import Entity
+
+class ActivationToken(models.Model):
+    email = models.CharField(max_length=255, primary_key=True)
+    token = models.CharField(
+        max_length=255, default=uuid.uuid4, editable=False, unique=True
+    )
+    accepts_terms = models.BooleanField()
+    terms_accepted = models.CharField(max_length=10, default="1.0.0")
+    created = models.DateField(auto_now_add=True)
 
 
-class ActivationToken(Entity):
-    email = models.CharField(max_length=255)
-    token = models.CharField(max_length=255)
+class PasswordResetToken(models.Model):
+    email = models.CharField(max_length=255, primary_key=True)
+    token = models.CharField(
+        max_length=255, default=uuid.uuid4, editable=False, unique=True
+    )
+    created = models.DateField(auto_now_add=True)

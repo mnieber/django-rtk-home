@@ -1,5 +1,6 @@
 import uuid
 
+from django.conf import settings
 from django.contrib.auth.models import (
     AbstractBaseUser,
     BaseUserManager,
@@ -9,7 +10,7 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, username, password=None, accepts_terms=False):
+    def create_user(self, email, username, password, accepts_terms, terms_accepted):
         if not email:
             raise ValueError("Users must have an email address.")
         if not username:
@@ -18,13 +19,19 @@ class UserManager(BaseUserManager):
             raise ValueError("Users must accept the terms.")
         user = self.model(email=self.normalize_email(email), username=username)
         user.accepts_terms = accepts_terms
+        user.terms_accepted = terms_accepted
         user.set_password(password)
         user.save()  # using=self._db
         return user
 
     def create_superuser(self, email, password=None, **kwargs):
+        terms_version = settings.TERMS_VERSION
         user = self.create_user(
-            email, username="super", password=password, accepts_terms=True
+            email,
+            username="super",
+            password=password,
+            accepts_terms=True,
+            terms_accepted=terms_version,
         )
         user.is_superuser = True
         user.is_staff = True
