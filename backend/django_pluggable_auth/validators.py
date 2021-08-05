@@ -6,7 +6,7 @@ def _is_valid_email(email):
     return re.match(regex, email)
 
 
-class DefaultValidator:
+class Validator:
     def validate_email(self, errors, email):
         if not _is_valid_email(email):
             errors["email"].append("INVALID_EMAIL")

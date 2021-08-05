@@ -20,12 +20,16 @@ class RegisterAccount(graphene.Mutation):
 
         result = {}
         if not errors:
-            result = get_backend().register_account(errors, **kwargs)
+            result = cls.run(errors, **kwargs)
 
         output_params = cls.extract_output_params(result)
         cls.on_result(errors, kwargs, result, output_params)
 
         return cls(success=not errors, errors=errors, **output_params)
+
+    @classmethod
+    def run(cls, errors, **kwargs):
+        return get_backend().register_account(errors, **kwargs)
 
     @classmethod
     def verify_args(cls, errors, email, **kwargs):

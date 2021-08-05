@@ -1,13 +1,13 @@
 import graphene
 
-import django_pluggable_auth.schema
+import dpa_setpasswordlater.schema
 
 
-class Query(django_pluggable_auth.schema.Query, graphene.ObjectType):
+class Query(dpa_setpasswordlater.schema.Query, graphene.ObjectType):
     pass
 
 
-class Mutation(django_pluggable_auth.schema.Mutation, graphene.ObjectType):
+class Mutation(dpa_setpasswordlater.schema.Mutation, graphene.ObjectType):
     pass
 
 

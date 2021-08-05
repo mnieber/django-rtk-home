@@ -45,3 +45,14 @@ class ResetPassword(endpoints.ResetPassword):
     class Arguments:
         token = graphene.String()
         password = graphene.String()
+
+
+class Query(graphene.ObjectType):
+    pass
+
+
+class Mutation(graphene.ObjectType):
+    register_account = RegisterAccount.Field()
+    activate_account = ActivateAccount.Field()
+    request_password_reset = RequestPasswordReset.Field()
+    reset_password = ResetPassword.Field()

@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-from django_pluggable_auth.models import ActivationToken, PasswordResetToken
+from .models import ActivationToken, PasswordResetToken
 
 
 def _create_user(activation_token, password):
@@ -19,7 +19,7 @@ def _create_user(activation_token, password):
     return user
 
 
-class DefaultBackend:
+class Backend:
     def register_account(self, errors, email, accepts_terms, terms_accepted, **kwargs):
         result = dict(token="")
         if errors:
@@ -53,7 +53,7 @@ class DefaultBackend:
             return result
 
         if not User.objects.filter(email=email):
-            errors["email"].append("Email unknown")
+            errors["email"].append("EMAIL_UNKNOWN")
             return result
 
         password_reset_token, _ = PasswordResetToken.objects.get_or_create(email=email)

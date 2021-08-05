@@ -18,7 +18,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "api.apps.ApiConfig",
     "app.apps.AppConfig",
-    "django_pluggable_auth.apps.DjangoPluggableAuthConfig",
+    "dpa_setpasswordlater.apps.Config",
     "users.apps.UsersConfig",
 ]
 

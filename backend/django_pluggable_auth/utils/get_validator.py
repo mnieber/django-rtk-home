@@ -8,7 +8,7 @@ def get_validator():
     global _validator
     if _validator is None:
         cls_path = get_setting_or(
-            "django_pluggable_auth.validators.DefaultValidator", "VALIDATOR"
+            "django_pluggable_auth.validators.Validator", "VALIDATOR"
         )
         cls = import_class(cls_path)
         _validator = cls()
