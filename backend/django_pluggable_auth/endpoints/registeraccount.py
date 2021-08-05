@@ -4,8 +4,8 @@ import graphene
 from graphene.types.generic import GenericScalar
 
 from django_pluggable_auth.utils.get_backend import get_backend
-from django_pluggable_auth.utils.get_checker import get_checker
 from django_pluggable_auth.utils.get_setting_or import get_setting_or
+from django_pluggable_auth.utils.get_validator import get_validator
 from django_pluggable_auth.utils.send_email import send_email
 
 
@@ -36,7 +36,7 @@ class RegisterAccount(graphene.Mutation):
     @classmethod
     def verify_args(cls, email, **kwargs):
         errors = defaultdict(lambda: list())
-        get_checker().check_email(errors, email)
+        get_validator().validate_email(errors, email)
         return errors
 
     @classmethod

@@ -6,11 +6,11 @@ def _is_valid_email(email):
     return re.match(regex, email)
 
 
-class DefaultChecker:
-    def check_email(self, errors, email):
+class DefaultValidator:
+    def validate_email(self, errors, email):
         if not _is_valid_email(email):
             errors["email"].append("Invalid email")
 
-    def check_password(self, errors, password):
+    def validate_password(self, errors, password):
         if len(password) < 6:
             errors["password"].append("Too short")

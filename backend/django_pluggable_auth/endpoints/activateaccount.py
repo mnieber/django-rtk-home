@@ -4,7 +4,7 @@ import graphene
 from graphene.types.generic import GenericScalar
 
 from django_pluggable_auth.utils.get_backend import get_backend
-from django_pluggable_auth.utils.get_checker import get_checker
+from django_pluggable_auth.utils.get_validator import get_validator
 
 
 class ActivateAccount(graphene.Mutation):
@@ -18,7 +18,7 @@ class ActivateAccount(graphene.Mutation):
     @classmethod
     def verify_args(cls, password, **kwargs):
         errors = defaultdict(lambda: list())
-        get_checker().check_password(errors, password)
+        get_validator().validate_password(errors, password)
         return errors
 
     @classmethod
