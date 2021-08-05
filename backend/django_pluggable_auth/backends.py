@@ -20,43 +20,64 @@ def _create_user(activation_token, password):
 
 
 class DefaultBackend:
-    def register_account(self, email, accepts_terms, terms_accepted, **kwargs):
+    def register_account(self, errors, email, accepts_terms, terms_accepted, **kwargs):
+        result = dict(token="")
+        if errors:
+            return result
+
         if User.objects.filter(email=email):
-            return dict(success=False, token="")
+            errors["email"].append("ALREADY_TAKEN")
+            return result
 
         activation_token, _ = ActivationToken.objects.get_or_create(
             email=email,
             defaults=dict(accepts_terms=accepts_terms, terms_accepted=terms_accepted),
         )
-        return dict(success=True, token=activation_token.token.hex)
+        result["token"] = activation_token.token.hex
+        return result
 
-    def activate_account(self, token, password, **kwargs):
+    def activate_account(self, errors, token, password, **kwargs):
+        result = dict(user=None)
+        if errors:
+            return result
+
         activation_tokens = ActivationToken.objects.filter(token=uuid.UUID(token))
-        user = (
-            _create_user(activation_tokens[0], password) if activation_tokens else None
-        )
-        return dict(success=bool(user), user=user)
+        if activation_tokens:
+            result["user"] = _create_user(activation_tokens[0], password)
 
-    def request_password_reset(self, email, **kwargs):
+        return result
+
+    def request_password_reset(self, errors, email, **kwargs):
+        result = dict(token="")
+        if errors:
+            return result
+
         if not User.objects.filter(email=email):
-            return dict(success=False, token="")
+            errors["email"].append("Email unknown")
+            return result
 
         password_reset_token, _ = PasswordResetToken.objects.get_or_create(email=email)
-        return dict(success=True, token=password_reset_token.token.hex)
+        result["token"] = password_reset_token.token.hex
 
-    def reset_password(self, token, password, **kwargs):
+        return result
+
+    def reset_password(self, errors, token, password, **kwargs):
+        result = dict(user=None)
+        if errors:
+            return result
+
         password_reset_tokens = PasswordResetToken.objects.filter(
             token=uuid.UUID(token)
         )
         password_reset_token = (
             password_reset_tokens[0] if password_reset_tokens else None
         )
-        user = None
+
         if password_reset_token:
             users = User.objects.filter(email=password_reset_token.email)
-            user = users[0] if users else None
-            if user:
+            if users:
+                user = result["user"] = users[0]
                 user.set_password(password)
                 user.save()
 
-        return dict(success=bool(user))
+        return result

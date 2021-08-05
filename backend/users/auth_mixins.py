@@ -21,8 +21,6 @@ class RegisterAccount(endpoints.RegisterAccount):
 
     @classmethod
     def extract_output_params(cls, result):
-        if "token" not in result:
-            raise Exception("django_pluggable_auth: incompatible backend")
         return {"token": extract_token(result)}
 
 
@@ -40,8 +38,6 @@ class RequestPasswordReset(endpoints.RequestPasswordReset):
 
     @classmethod
     def extract_output_params(cls, result):
-        if "token" not in result:
-            raise Exception("django_pluggable_auth: incompatible backend")
         return {"token": extract_token(result)}
 
 

@@ -125,7 +125,7 @@ class TestSchema:
             "data": {
                 "registerAccount": {
                     "success": False,
-                    "errors": {"email": ["Invalid email"]},
+                    "errors": {"email": ["INVALID_EMAIL"]},
                 }
             }
         }
@@ -151,7 +151,7 @@ class TestSchema:
             "data": {
                 "activateAccount": {
                     "success": False,
-                    "errors": {"password": ["Too short"]},
+                    "errors": {"password": ["TOO_SHORT"]},
                 }
             }
         }

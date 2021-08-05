@@ -12,26 +12,27 @@ class ActivateAccount(graphene.Mutation):
     errors = GenericScalar()
 
     @classmethod
+    def mutate(cls, parent, info, **kwargs):
+        errors = defaultdict(lambda: list())
+        cls.verify_args(errors, **kwargs)
+
+        result = {}
+        if not errors:
+            result = get_backend().activate_account(errors, **kwargs)
+
+        output_params = cls.extract_output_params(result)
+        cls.on_result(errors, kwargs, result, output_params)
+
+        return cls(success=not errors, errors=errors, **output_params)
+
+    @classmethod
     def extract_output_params(cls, result):
         return {}
 
     @classmethod
-    def verify_args(cls, password, **kwargs):
-        errors = defaultdict(lambda: list())
+    def verify_args(cls, errors, password, **kwargs):
         get_validator().validate_password(errors, password)
-        return errors
 
     @classmethod
-    def on_result(cls, kwargs, result, output_params):
+    def on_result(cls, errors, kwargs, result, output_params):
         pass
-
-    @classmethod
-    def mutate(cls, parent, info, **kwargs):
-        errors = cls.verify_args(**kwargs)
-        if errors:
-            return cls(success=False, errors=errors)
-
-        result = get_backend().activate_account(**kwargs)
-        output_params = cls.extract_output_params(result)
-        cls.on_result(kwargs, result, output_params)
-        return cls(success=result["success"], errors=errors, **output_params)

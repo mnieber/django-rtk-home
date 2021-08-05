@@ -9,8 +9,8 @@ def _is_valid_email(email):
 class DefaultValidator:
     def validate_email(self, errors, email):
         if not _is_valid_email(email):
-            errors["email"].append("Invalid email")
+            errors["email"].append("INVALID_EMAIL")
 
     def validate_password(self, errors, password):
         if len(password) < 6:
-            errors["password"].append("Too short")
+            errors["password"].append("TOO_SHORT")

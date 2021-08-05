@@ -13,8 +13,31 @@ class RequestPasswordReset(graphene.Mutation):
     errors = GenericScalar()
 
     @classmethod
+    def mutate(cls, parent, info, **kwargs):
+        errors = defaultdict(lambda: list())
+        cls.verify_args(errors, **kwargs)
+
+        result = {}
+        if not errors:
+            result = get_backend().request_password_reset(errors, **kwargs)
+
+        output_params = cls.extract_output_params(result)
+        cls.on_result(errors, kwargs, result, output_params)
+
+        return cls(success=not errors, errors=errors, **output_params)
+
+    @classmethod
     def extract_output_params(cls, result):
         return {}
+
+    @classmethod
+    def verify_args(cls, errors, email, **kwargs):
+        pass
+
+    @classmethod
+    def on_result(cls, errors, kwargs, result, output_params):
+        if not errors:
+            cls.send_email(kwargs, result, output_params)
 
     @classmethod
     def send_email(cls, kwargs, result, output_params):
@@ -34,24 +57,3 @@ class RequestPasswordReset(graphene.Mutation):
             ),
             context=dict(kwargs=kwargs, result=result, output_params=output_params),
         )
-
-    @classmethod
-    def verify_args(cls, email, **kwargs):
-        errors = defaultdict(lambda: list())
-        return errors
-
-    @classmethod
-    def on_result(cls, kwargs, result, output_params):
-        if result["success"]:
-            cls.send_email(kwargs, result, output_params)
-
-    @classmethod
-    def mutate(cls, parent, info, **kwargs):
-        errors = cls.verify_args(**kwargs)
-        if errors:
-            return cls(success=False, errors=errors)
-
-        result = get_backend().request_password_reset(**kwargs)
-        output_params = cls.extract_output_params(result)
-        cls.on_result(kwargs, result, output_params)
-        return cls(success=result["success"], errors=errors, **output_params)
