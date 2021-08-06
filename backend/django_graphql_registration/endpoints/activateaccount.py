@@ -3,10 +3,11 @@ from collections import defaultdict
 import graphene
 from graphene.types.generic import GenericScalar
 
-from django_pluggable_auth.utils.get_backend import get_backend
+from django_graphql_registration.utils.get_backend import get_backend
+from django_graphql_registration.utils.get_validator import get_validator
 
 
-class ResetPassword(graphene.Mutation):
+class ActivateAccount(graphene.Mutation):
     success = graphene.Boolean()
     errors = GenericScalar()
 
@@ -26,7 +27,7 @@ class ResetPassword(graphene.Mutation):
 
     @classmethod
     def run(cls, errors, **kwargs):
-        return get_backend().reset_password(errors, **kwargs)
+        return get_backend().activate_account(errors, **kwargs)
 
     @classmethod
     def extract_output_params(cls, result):
@@ -34,7 +35,7 @@ class ResetPassword(graphene.Mutation):
 
     @classmethod
     def verify_args(cls, errors, password, **kwargs):
-        pass
+        get_validator().validate_password(errors, password)
 
     @classmethod
     def on_result(cls, errors, kwargs, result, output_params):

@@ -3,10 +3,10 @@ from collections import defaultdict
 import graphene
 from graphene.types.generic import GenericScalar
 
-from django_pluggable_auth.utils.get_backend import get_backend
-from django_pluggable_auth.utils.get_setting_or import get_setting_or
-from django_pluggable_auth.utils.get_validator import get_validator
-from django_pluggable_auth.utils.send_email import send_email
+from django_graphql_registration.utils.get_backend import get_backend
+from django_graphql_registration.utils.get_setting_or import get_setting_or
+from django_graphql_registration.utils.get_validator import get_validator
+from django_graphql_registration.utils.send_email import send_email
 
 
 class RegisterAccount(graphene.Mutation):
@@ -52,7 +52,7 @@ class RegisterAccount(graphene.Mutation):
                 "Welcome to {site_name}", "EMAILS", "RegisterAccount", "subject"
             ),
             template=get_setting_or(
-                "django_pluggable_auth.email_templates.RegisterAccount",
+                "django_graphql_registration.email_templates.RegisterAccount",
                 "EMAILS",
                 "RegisterAccount",
                 "template",

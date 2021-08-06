@@ -30,13 +30,13 @@ CACHES = {
 GRAPHENE = {
     "SCHEMA": "api.schema.schema",
     "MIDDLEWARE": [
-        # "graphql_jwt.middleware.JSONWebTokenMiddleware",
+        "graphql_jwt.middleware.JSONWebTokenMiddleware",
     ],
 }
 
 
-DJANGO_PLUGGABLE_AUTH = {
-    "BACKEND": "dpa_setpasswordlater.backends.Backend",
-    "VALIDATOR": "django_pluggable_auth.validators.Validator",
+DJANGO_GRAPHQL_REGISTRATION = {
+    "BACKEND": "dgr_setpasswordlater.backends.Backend",
+    "VALIDATOR": "django_graphql_registration.validators.Validator",
     "DANGEROUSLY_EXPOSE_TOKENS": True,
 }

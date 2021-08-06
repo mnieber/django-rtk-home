@@ -3,3 +3,4 @@ django-cors-headers
 django-environ
 graphene-django
 psycopg2
+django-graphql-jwt

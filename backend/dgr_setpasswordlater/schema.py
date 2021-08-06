@@ -1,8 +1,8 @@
 import graphene
 
-import django_pluggable_auth.endpoints as endpoints
-from django_pluggable_auth.utils.get_backend import get_backend
-from django_pluggable_auth.utils.get_setting_or import get_setting_or
+import django_graphql_registration.endpoints as endpoints
+from django_graphql_registration.utils.get_backend import get_backend
+from django_graphql_registration.utils.get_setting_or import get_setting_or
 
 
 def extract_token(result):

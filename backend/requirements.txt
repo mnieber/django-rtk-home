@@ -12,15 +12,22 @@ django==3.2.6
     # via
     #   -r requirements.in
     #   django-cors-headers
+    #   django-graphql-jwt
     #   graphene-django
 django-cors-headers==3.7.0
     # via -r requirements.in
 django-environ==0.4.5
     # via -r requirements.in
-graphene==2.1.9
-    # via graphene-django
-graphene-django==2.15.0
+django-graphql-jwt==0.3.3
     # via -r requirements.in
+graphene==2.1.9
+    # via
+    #   django-graphql-jwt
+    #   graphene-django
+graphene-django==2.15.0
+    # via
+    #   -r requirements.in
+    #   django-graphql-jwt
 graphql-core==2.3.2
     # via
     #   graphene
@@ -35,6 +42,8 @@ promise==2.3
     #   graphql-relay
 psycopg2==2.9.1
     # via -r requirements.in
+pyjwt==2.1.0
+    # via django-graphql-jwt
 pytz==2021.1
     # via django
 rx==1.6.1

@@ -1,7 +1,6 @@
 import pytest
+from dgr_setpasswordlater.models import ActivationToken, PasswordResetToken
 from django.test import Client
-
-from dpa_setpasswordlater.models import ActivationToken, PasswordResetToken
 
 activation_token_dict = dict(
     email="user@test.com", token="123", accepts_terms=True, terms_accepted="1.0.0"
