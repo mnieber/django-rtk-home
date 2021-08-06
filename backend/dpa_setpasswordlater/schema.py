@@ -1,6 +1,7 @@
 import graphene
 
 import django_pluggable_auth.endpoints as endpoints
+from django_pluggable_auth.utils.get_backend import get_backend
 from django_pluggable_auth.utils.get_setting_or import get_setting_or
 
 
@@ -18,6 +19,16 @@ class RegisterAccount(endpoints.RegisterAccount):
         terms_accepted = graphene.String()
 
     token = graphene.String()
+
+    @classmethod
+    def run(cls, errors, **kwargs):
+        result = get_backend().register_account(errors, **kwargs)
+
+        return_email_already_taken = get_setting_or(True, "RETURN_EMAIL_ALREADY_TAKEN")
+        if not return_email_already_taken and "ALREADY_TAKEN" in errors["email"]:
+            errors["email"].remove("ALREADY_TAKEN")
+
+        return result
 
     @classmethod
     def extract_output_params(cls, result):
