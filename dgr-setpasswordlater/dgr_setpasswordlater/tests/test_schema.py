@@ -45,14 +45,14 @@ class TestSchema:
 
         query = """mutation {{
             activateAccount(
-                token: "{token}"
+                activationToken: "{activationToken}"
                 password: "{password}",
             ) {{
                 success,
                 errors
             }}
         }}""".format(
-            token=activation_token.token,
+            activationToken=activation_token.token,
             password="foobarbaz123",
         )
         response = client.post("/graphql/", dict(query=query))
@@ -83,14 +83,14 @@ class TestSchema:
 
         query = """mutation {{
             resetPassword(
-                token: "{token}",
+                passwordResetToken: "{password_reset_token}",
                 password: "{password}",
             ) {{
                 success,
                 errors
             }}
         }}""".format(
-            token=password_reset_token.token,
+            password_reset_token=password_reset_token.token,
             password="bar",
         )
 
@@ -133,14 +133,14 @@ class TestSchema:
     def test_bad_password(self, client: Client, activation_token: ActivationToken):
         query = """mutation {{
             activateAccount(
-                token: "{token}"
+                activationToken: "{activation_token}"
                 password: "{password}",
             ) {{
                 success,
                 errors
             }}
         }}""".format(
-            token=activation_token.token,
+            activation_token=activation_token.token,
             password="foo",
         )
         response = client.post("/graphql/", dict(query=query))
