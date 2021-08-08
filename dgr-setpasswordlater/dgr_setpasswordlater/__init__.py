@@ -1,1 +1,1 @@
-from .schema import Mutation  # noqa
+from .mutations import Mutation  # noqa

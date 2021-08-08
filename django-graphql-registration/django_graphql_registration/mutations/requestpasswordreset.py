@@ -1,11 +1,12 @@
 from collections import defaultdict
 
 import graphene
-from graphene.types.generic import GenericScalar
-
+from django_graphql_registration.signals import password_reset_requested
+from django_graphql_registration.utils.errors import count_errors, remove_empty_errors
 from django_graphql_registration.utils.get_backend import get_backend
 from django_graphql_registration.utils.get_setting_or import get_setting_or
 from django_graphql_registration.utils.send_email import send_email
+from graphene.types.generic import GenericScalar
 
 
 class RequestPasswordReset(graphene.Mutation):
@@ -18,12 +19,15 @@ class RequestPasswordReset(graphene.Mutation):
         cls.verify_args(errors, **kwargs)
 
         result = {}
-        if not errors:
+        if not count_errors(errors):
             result = cls.run(errors, **kwargs)
 
         output_params = cls.extract_output_params(result)
         cls.on_result(errors, kwargs, result, output_params)
 
+        password_reset_requested.send(sender=cls, **kwargs)
+
+        remove_empty_errors(errors)
         return cls(success=not errors, errors=errors, **output_params)
 
     @classmethod
@@ -40,7 +44,7 @@ class RequestPasswordReset(graphene.Mutation):
 
     @classmethod
     def on_result(cls, errors, kwargs, result, output_params):
-        if not errors:
+        if not count_errors(errors):
             cls.send_email(kwargs, result, output_params)
 
     @classmethod

@@ -1,6 +1,7 @@
 import uuid
 
 from django.contrib.auth import get_user_model
+from django_graphql_registration.utils.errors import count_errors
 
 User = get_user_model()
 
@@ -24,7 +25,7 @@ class Backend:
         self, errors, email, accepts_terms, terms_version_accepted, **kwargs
     ):
         result = dict(activation_token="")
-        if errors:
+        if count_errors(errors):
             return result
 
         if User.objects.filter(email=email):
@@ -43,7 +44,7 @@ class Backend:
 
     def activate_account(self, errors, activation_token, password, **kwargs):
         result = dict(user=None)
-        if errors:
+        if count_errors(errors):
             return result
 
         activation_tokens = ActivationToken.objects.filter(
@@ -56,7 +57,7 @@ class Backend:
 
     def request_password_reset(self, errors, email, **kwargs):
         result = dict(password_reset_token="")
-        if errors:
+        if count_errors(errors):
             return result
 
         if not User.objects.filter(email=email):
@@ -70,7 +71,7 @@ class Backend:
 
     def reset_password(self, errors, password_reset_token, password, **kwargs):
         result = dict(user=None)
-        if errors:
+        if count_errors(errors):
             return result
 
         password_reset_tokens = PasswordResetToken.objects.filter(

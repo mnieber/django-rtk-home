@@ -19,8 +19,8 @@ class RegisterAccount(mutations.RegisterAccount):
     def run(cls, errors, **kwargs):
         result = get_backend().register_account(errors, **kwargs)
 
-        return_email_already_taken = get_setting_or(True, "RETURN_EMAIL_ALREADY_TAKEN")
-        if not return_email_already_taken and "ALREADY_TAKEN" in errors["email"]:
+        hide_account_existence = get_setting_or(True, "HIDE_ACCOUNT_EXISTENCE")
+        if hide_account_existence and "ALREADY_TAKEN" in errors["email"]:
             errors["email"].remove("ALREADY_TAKEN")
 
         return result
