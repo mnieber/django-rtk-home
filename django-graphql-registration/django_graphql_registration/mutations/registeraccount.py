@@ -2,7 +2,7 @@ from collections import defaultdict
 
 import graphene
 from django_graphql_registration.signals import account_registered
-from django_graphql_registration.utils.errors import count_errors, remove_empty_errors
+from django_graphql_registration.utils.errors import count_errors, reformat_errors
 from django_graphql_registration.utils.get_backend import get_backend
 from django_graphql_registration.utils.get_setting_or import get_setting_or
 from django_graphql_registration.utils.get_validator import get_validator
@@ -28,7 +28,7 @@ class RegisterAccount(graphene.Mutation):
 
         account_registered.send(sender=cls, **kwargs)
 
-        remove_empty_errors(errors)
+        reformat_errors(errors)
         return cls(success=not errors, errors=errors, **output_params)
 
     @classmethod
@@ -50,16 +50,15 @@ class RegisterAccount(graphene.Mutation):
 
     @classmethod
     def send_email(cls, kwargs, result, output_params):
-        send_email(
-            to=kwargs["email"],
-            subject=get_setting_or(
-                "Welcome to {site_name}", "EMAILS", "RegisterAccount", "subject"
-            ),
-            template=get_setting_or(
-                "django_graphql_registration.email_templates.RegisterAccount",
-                "EMAILS",
-                "RegisterAccount",
-                "template",
-            ),
-            context=dict(kwargs=kwargs, result=result, output_params=output_params),
-        )
+        template = get_setting_or(None, "EMAIL_TEMPLATES", "RegisterAccount")
+        subject = get_setting_or(None, "EMAIL_SUBJECTS", "RegisterAccount")
+        context = get_setting_or({}, "EMAIL_CONTEXT")
+        if subject and template:
+            send_email(
+                to_email=kwargs["email"],
+                subject=subject,
+                template=template,
+                context=dict(
+                    **context, kwargs=kwargs, result=result, output_params=output_params
+                ),
+            )

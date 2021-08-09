@@ -12,5 +12,5 @@ class Validator:
             errors["email"].append("INVALID_EMAIL")
 
     def validate_password(self, errors, password):
-        if len(password) < 6:
+        if len(password) < 8:
             errors["password"].append("TOO_SHORT")

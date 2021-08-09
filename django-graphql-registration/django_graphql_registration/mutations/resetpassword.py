@@ -2,7 +2,7 @@ from collections import defaultdict
 
 import graphene
 from django_graphql_registration.signals import password_reset
-from django_graphql_registration.utils.errors import count_errors, remove_empty_errors
+from django_graphql_registration.utils.errors import count_errors, reformat_errors
 from django_graphql_registration.utils.get_backend import get_backend
 from graphene.types.generic import GenericScalar
 
@@ -25,7 +25,7 @@ class ResetPassword(graphene.Mutation):
 
         password_reset.send(sender=cls, **kwargs)
 
-        remove_empty_errors(errors)
+        reformat_errors(errors)
         return cls(success=not errors, errors=errors, **output_params)
 
     @classmethod

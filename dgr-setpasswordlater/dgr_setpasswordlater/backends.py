@@ -51,7 +51,11 @@ class Backend:
             token=uuid.UUID(activation_token)
         )
         if activation_tokens:
-            result["user"] = _create_user(activation_tokens[0], password)
+            activation_token = activation_tokens[0]
+            result["user"] = _create_user(activation_token, password)
+            activation_token.delete()
+        else:
+            errors["activation_token"].append("NOT_FOUND")
 
         return result
 
@@ -77,15 +81,18 @@ class Backend:
         password_reset_tokens = PasswordResetToken.objects.filter(
             token=uuid.UUID(password_reset_token)
         )
-        password_reset_token = (
-            password_reset_tokens[0] if password_reset_tokens else None
-        )
 
-        if password_reset_token:
+        if not password_reset_tokens:
+            errors["password_reset_token"].append("NOT_FOUND")
+        else:
+            password_reset_token = password_reset_tokens[0]
             users = User.objects.filter(email=password_reset_token.email)
-            if users:
+            if not users:
+                errors["password_reset_token"].append("EMAIL_UNKNOWN")
+            else:
                 user = result["user"] = users[0]
                 user.set_password(password)
                 user.save()
+                password_reset_token.delete()
 
         return result
