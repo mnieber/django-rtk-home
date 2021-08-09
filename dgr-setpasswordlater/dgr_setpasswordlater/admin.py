@@ -3,5 +3,13 @@ from django.contrib import admin
 from dgr_setpasswordlater import models
 
 
-admin.site.register(models.ActivationToken)
-admin.site.register(models.PasswordResetToken)
+class ActivationTokenAdmin(admin.ModelAdmin):
+    readonly_fields = ["token"]
+
+
+class PasswordResetTokenAdmin(admin.ModelAdmin):
+    readonly_fields = ["token"]
+
+
+admin.site.register(models.ActivationToken, ActivationTokenAdmin)
+admin.site.register(models.PasswordResetToken, PasswordResetTokenAdmin)
