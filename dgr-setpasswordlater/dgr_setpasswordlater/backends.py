@@ -28,8 +28,8 @@ class Backend:
         if count_errors(errors):
             return result
 
-        if User.objects.filter(email=email):
-            errors["email"].append("ALREADY_TAKEN")
+        if User.objects.filter(email=email).exists():
+            errors.setdefault("email", []).append("ALREADY_TAKEN")
             return result
 
         activation_token, _ = ActivationToken.objects.get_or_create(
@@ -47,15 +47,14 @@ class Backend:
         if count_errors(errors):
             return result
 
-        activation_tokens = ActivationToken.objects.filter(
+        activation_token = ActivationToken.objects.filter(
             token=uuid.UUID(activation_token)
-        )
-        if activation_tokens:
-            activation_token = activation_tokens[0]
+        ).first()
+        if activation_token:
             result["user"] = _create_user(activation_token, password)
             activation_token.delete()
         else:
-            errors["activation_token"].append("NOT_FOUND")
+            errors.setdefault("activation_token", []).append("NOT_FOUND")
 
         return result
 
@@ -64,8 +63,11 @@ class Backend:
         if count_errors(errors):
             return result
 
-        if not User.objects.filter(email=email).exists():
-            errors["email"].append("EMAIL_UNKNOWN")
+        if (
+            not User.objects.filter(email=email).exists()
+            and not ActivationToken.objects.filter(email=email).exists()
+        ):
+            errors.setdefault("email", []).append("EMAIL_UNKNOWN")
             return result
 
         password_reset_token, _ = PasswordResetToken.objects.get_or_create(email=email)
@@ -78,19 +80,28 @@ class Backend:
         if count_errors(errors):
             return result
 
-        password_reset_tokens = PasswordResetToken.objects.filter(
+        password_reset_token = PasswordResetToken.objects.filter(
             token=uuid.UUID(password_reset_token)
-        )
+        ).first()
 
-        if not password_reset_tokens:
-            errors["password_reset_token"].append("NOT_FOUND")
+        if not password_reset_token:
+            errors.setdefault("password_reset_token", []).append("NOT_FOUND")
         else:
-            password_reset_token = password_reset_tokens[0]
-            users = User.objects.filter(email=password_reset_token.email)
-            if not users:
-                errors["password_reset_token"].append("EMAIL_UNKNOWN")
-            else:
-                user = result["user"] = users[0]
+            user = User.objects.filter(email=password_reset_token.email).first()
+            if not user:
+                activation_token = ActivationToken.objects.filter(
+                    email=password_reset_token.email
+                ).first()
+                if activation_token:
+                    user = _create_user(activation_token, password)
+                    activation_token.delete()
+                else:
+                    errors.setdefault("password_reset_token", []).append(
+                        "EMAIL_UNKNOWN"
+                    )
+
+            result["user"] = user
+            if user:
                 user.set_password(password)
                 user.save()
                 password_reset_token.delete()
