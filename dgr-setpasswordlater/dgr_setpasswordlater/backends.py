@@ -64,7 +64,7 @@ class Backend:
         if count_errors(errors):
             return result
 
-        if not User.objects.filter(email=email):
+        if not User.objects.filter(email=email).exists():
             errors["email"].append("EMAIL_UNKNOWN")
             return result
 

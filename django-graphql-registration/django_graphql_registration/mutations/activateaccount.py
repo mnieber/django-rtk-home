@@ -2,8 +2,7 @@ from collections import defaultdict
 
 import graphene
 from django_graphql_registration.signals import account_activated
-from django_graphql_registration.utils.errors import (count_errors,
-                                                      reformat_errors)
+from django_graphql_registration.utils.errors import count_errors, reformat_errors
 from django_graphql_registration.utils.get_backend import get_backend
 from django_graphql_registration.utils.get_validator import get_validator
 from graphene.types.generic import GenericScalar
@@ -22,13 +21,13 @@ class ActivateAccount(graphene.Mutation):
         if not count_errors(errors):
             result = cls.run(errors, **kwargs)
 
-        output_params = cls.extract_output_params(result)
-        cls.on_result(errors, kwargs, result, output_params)
+        cls.on_result(errors, kwargs, result)
 
         if not count_errors(errors):
             account_activated.send(sender=cls, **kwargs)
 
-        reformat_errors(errors)
+        output_params = cls.extract_output_params(result)
+        errors = reformat_errors(errors)
         return cls(success=not errors, errors=errors, **output_params)
 
     @classmethod
@@ -44,5 +43,5 @@ class ActivateAccount(graphene.Mutation):
         get_validator().validate_password(errors, password)
 
     @classmethod
-    def on_result(cls, errors, kwargs, result, output_params):
+    def on_result(cls, errors, kwargs, result):
         pass

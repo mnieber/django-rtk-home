@@ -23,12 +23,12 @@ class RegisterAccount(graphene.Mutation):
         if not count_errors(errors):
             result = cls.run(errors, **kwargs)
 
-        output_params = cls.extract_output_params(result)
-        cls.on_result(errors, kwargs, result, output_params)
+        cls.on_result(errors, kwargs, result)
 
         account_registered.send(sender=cls, **kwargs)
 
-        reformat_errors(errors)
+        output_params = cls.extract_output_params(result)
+        errors = reformat_errors(errors)
         return cls(success=not errors, errors=errors, **output_params)
 
     @classmethod
@@ -44,12 +44,12 @@ class RegisterAccount(graphene.Mutation):
         return {}
 
     @classmethod
-    def on_result(cls, errors, kwargs, result, output_params):
+    def on_result(cls, errors, kwargs, result):
         if not count_errors(errors):
-            cls.send_email(kwargs, result, output_params)
+            cls.send_email(kwargs, result)
 
     @classmethod
-    def send_email(cls, kwargs, result, output_params):
+    def send_email(cls, kwargs, result):
         template = get_setting_or(None, "EMAIL_TEMPLATES", "RegisterAccount")
         subject = get_setting_or(None, "EMAIL_SUBJECTS", "RegisterAccount")
         context = get_setting_or({}, "EMAIL_CONTEXT")
@@ -58,7 +58,5 @@ class RegisterAccount(graphene.Mutation):
                 to_email=kwargs["email"],
                 subject=subject,
                 template=template,
-                context=dict(
-                    **context, kwargs=kwargs, result=result, output_params=output_params
-                ),
+                context=dict(**context, kwargs=kwargs, result=result),
             )

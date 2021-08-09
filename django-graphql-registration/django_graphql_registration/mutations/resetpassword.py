@@ -20,12 +20,12 @@ class ResetPassword(graphene.Mutation):
         if not count_errors(errors):
             result = cls.run(errors, **kwargs)
 
-        output_params = cls.extract_output_params(result)
-        cls.on_result(errors, kwargs, result, output_params)
+        cls.on_result(errors, kwargs, result)
 
         password_reset.send(sender=cls, **kwargs)
 
-        reformat_errors(errors)
+        output_params = cls.extract_output_params(result)
+        errors = reformat_errors(errors)
         return cls(success=not errors, errors=errors, **output_params)
 
     @classmethod
@@ -41,5 +41,5 @@ class ResetPassword(graphene.Mutation):
         pass
 
     @classmethod
-    def on_result(cls, errors, kwargs, result, output_params):
+    def on_result(cls, errors, kwargs, result):
         pass

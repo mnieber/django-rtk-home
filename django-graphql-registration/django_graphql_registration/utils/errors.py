@@ -11,7 +11,8 @@ def count_errors(errors):
 
 
 def reformat_errors(errors):
+    result = {}
     for key, value in list(errors.items()):
-        del errors[key]
         if value:
-            errors[_snake_to_camel(key)] = value
+            result[_snake_to_camel(key)] = value
+    return result

@@ -17,7 +17,7 @@ class ObtainJSONWebToken(graphql_jwt.mutations.ObtainJSONWebToken):
             result = super().mutate(root, info, **kwargs)
         except graphql_jwt.exceptions.JSONWebTokenError as e:
             errors = dict(non_field_errors=["INVALID_CREDENTIALS"])
-            reformat_errors(errors)
+            errors = reformat_errors(errors)
             return cls(success=not errors, errors=errors, token="", refresh_token="")
         else:
             return result
