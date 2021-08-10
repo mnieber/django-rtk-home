@@ -10,6 +10,10 @@ def count_errors(errors):
     return result
 
 
+def get_errors(errors, field_name):
+    return errors.setdefault(field_name, [])
+
+
 def reformat_errors(errors):
     result = {}
     for key, value in list(errors.items()):

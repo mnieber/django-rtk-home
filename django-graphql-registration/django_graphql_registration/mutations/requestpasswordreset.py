@@ -1,8 +1,7 @@
-from collections import defaultdict
-
 import graphene
 from django_graphql_registration.signals import password_reset_requested
-from django_graphql_registration.utils.errors import count_errors, reformat_errors
+from django_graphql_registration.utils.errors import (count_errors,
+                                                      reformat_errors)
 from django_graphql_registration.utils.get_backend import get_backend
 from django_graphql_registration.utils.get_setting_or import get_setting_or
 from django_graphql_registration.utils.send_email import send_email
@@ -15,7 +14,7 @@ class RequestPasswordReset(graphene.Mutation):
 
     @classmethod
     def mutate(cls, parent, info, **kwargs):
-        errors = defaultdict(lambda: list())
+        errors = dict()
         cls.verify_args(errors, **kwargs)
 
         result = {}

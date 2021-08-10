@@ -1,6 +1,7 @@
 import django_graphql_registration.mutations as mutations
 import graphene
 from dgr_setpasswordlater.mutations.utils import extract_token
+from django_graphql_registration.utils.errors import get_errors
 from django_graphql_registration.utils.get_backend import get_backend
 from django_graphql_registration.utils.get_setting_or import get_setting_or
 
@@ -16,8 +17,8 @@ class RequestPasswordReset(mutations.RequestPasswordReset):
         result = get_backend().request_password_reset(errors, **kwargs)
 
         hide_account_existence = get_setting_or(True, "HIDE_ACCOUNT_EXISTENCE")
-        if hide_account_existence and "EMAIL_UNKNOWN" in errors["email"]:
-            errors["email"].remove("EMAIL_UNKNOWN")
+        if hide_account_existence and "EMAIL_UNKNOWN" in get_errors(errors, "email"):
+            get_errors(errors, "email").remove("EMAIL_UNKNOWN")
 
         return result
 

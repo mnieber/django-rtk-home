@@ -1,23 +1,10 @@
 import uuid
 
 from django.contrib.auth import get_user_model
-from django_graphql_registration.utils.errors import count_errors
+from django_graphql_registration.utils.errors import count_errors, get_errors
 
-User = get_user_model()
-
-
-from .models import ActivationToken, PasswordResetToken
-
-
-def _create_user(activation_token, password):
-    user = User.objects.create_user(
-        email=activation_token.email,
-        username=activation_token.email,
-        password=password,
-        accepts_terms=activation_token.accepts_terms,
-        terms_version_accepted=activation_token.terms_version_accepted,
-    )
-    return user
+from dgr_setpasswordlater.models import ActivationToken, PasswordResetToken
+from dgr_setpasswordlater.utils.consume_activation_token import consume_activation_token
 
 
 class Backend:
@@ -28,8 +15,8 @@ class Backend:
         if count_errors(errors):
             return result
 
-        if User.objects.filter(email=email).exists():
-            errors.setdefault("email", []).append("ALREADY_TAKEN")
+        if get_user_model().objects.filter(email=email).exists():
+            get_errors(errors, "email").append("ALREADY_TAKEN")
             return result
 
         activation_token, _ = ActivationToken.objects.get_or_create(
@@ -47,14 +34,11 @@ class Backend:
         if count_errors(errors):
             return result
 
-        activation_token = ActivationToken.objects.filter(
-            token=uuid.UUID(activation_token)
-        ).first()
-        if activation_token:
-            result["user"] = _create_user(activation_token, password)
-            activation_token.delete()
-        else:
-            errors.setdefault("activation_token", []).append("NOT_FOUND")
+        user = result["user"] = consume_activation_token(
+            password, token=uuid.UUID(activation_token)
+        )
+        if not user:
+            get_errors(errors, "activation_token").append("NOT_FOUND")
 
         return result
 
@@ -64,10 +48,10 @@ class Backend:
             return result
 
         if (
-            not User.objects.filter(email=email).exists()
+            not get_user_model().objects.filter(email=email).exists()
             and not ActivationToken.objects.filter(email=email).exists()
         ):
-            errors.setdefault("email", []).append("EMAIL_UNKNOWN")
+            get_errors(errors, "email").append("EMAIL_UNKNOWN")
             return result
 
         password_reset_token, _ = PasswordResetToken.objects.get_or_create(email=email)
@@ -85,25 +69,18 @@ class Backend:
         ).first()
 
         if not password_reset_token:
-            errors.setdefault("password_reset_token", []).append("NOT_FOUND")
+            get_errors(errors, "password_reset_token").append("NOT_FOUND")
         else:
-            user = User.objects.filter(email=password_reset_token.email).first()
-            if not user:
-                activation_token = ActivationToken.objects.filter(
-                    email=password_reset_token.email
-                ).first()
-                if activation_token:
-                    user = _create_user(activation_token, password)
-                    activation_token.delete()
-                else:
-                    errors.setdefault("password_reset_token", []).append(
-                        "EMAIL_UNKNOWN"
-                    )
-
-            result["user"] = user
+            user = result["user"] = get_user_model().objects.filter(
+                email=password_reset_token.email
+            ).first() or consume_activation_token(
+                password, email=password_reset_token.email
+            )
             if user:
                 user.set_password(password)
                 user.save()
                 password_reset_token.delete()
+            else:
+                get_errors(errors, "password_reset_token").append("EMAIL_UNKNOWN")
 
         return result

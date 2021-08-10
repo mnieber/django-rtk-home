@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 import graphene
 from django_graphql_registration.signals import account_activated
 from django_graphql_registration.utils.errors import count_errors, reformat_errors
@@ -14,7 +12,7 @@ class ActivateAccount(graphene.Mutation):
 
     @classmethod
     def mutate(cls, parent, info, **kwargs):
-        errors = defaultdict(lambda: list())
+        errors = dict()
         cls.verify_args(errors, **kwargs)
 
         result = {}
