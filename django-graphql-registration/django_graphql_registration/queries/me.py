@@ -4,7 +4,7 @@ import graphene
 from django.contrib.auth import get_user_model
 
 
-class MeQuery(graphene.ObjectType):
+class Me(graphene.ObjectType):
     username = graphene.String()
 
     def resolve_username(self, info):

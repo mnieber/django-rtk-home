@@ -1,9 +1,9 @@
 import graphene
 from django_graphql_registration.signals import account_registered
-from django_graphql_registration.utils.errors import count_errors, reformat_errors
+from django_graphql_registration.utils.errors import (count_errors,
+                                                      reformat_errors)
 from django_graphql_registration.utils.get_backend import get_backend
 from django_graphql_registration.utils.get_setting_or import get_setting_or
-from django_graphql_registration.utils.get_validator import get_validator
 from django_graphql_registration.utils.send_email import send_email
 from graphene.types.generic import GenericScalar
 
@@ -15,17 +15,17 @@ class RegisterAccount(graphene.Mutation):
     @classmethod
     def mutate(cls, parent, info, **kwargs):
         errors = dict()
-        cls.verify_args(errors, **kwargs)
+        cls.validate_args(errors, **kwargs)
 
         result = {}
         if not count_errors(errors):
             result = cls.run(errors, **kwargs)
 
-        cls.on_result(errors, kwargs, result)
+        cls.on_result(errors, result, **kwargs)
 
         account_registered.send(sender=cls, **kwargs)
 
-        output_params = cls.extract_output_params(result)
+        output_params = cls.get_output_values(result)
         errors = reformat_errors(errors)
         return cls(success=not errors, errors=errors, **output_params)
 
@@ -34,27 +34,33 @@ class RegisterAccount(graphene.Mutation):
         return get_backend().register_account(errors, **kwargs)
 
     @classmethod
-    def verify_args(cls, errors, email, **kwargs):
-        get_validator().validate_email(errors, email)
+    def validate_args(cls, errors, **kwargs):
+        pass
 
     @classmethod
-    def extract_output_params(cls, result):
+    def get_output_values(cls, result):
         return {}
 
     @classmethod
-    def on_result(cls, errors, kwargs, result):
+    def on_result(cls, errors, result, **kwargs):
         if not count_errors(errors):
-            cls.send_email(kwargs, result)
+            cls.send_email(result, **kwargs)
 
     @classmethod
-    def send_email(cls, kwargs, result):
-        template = get_setting_or(None, "EMAIL_TEMPLATES", "RegisterAccount")
-        subject = get_setting_or(None, "EMAIL_SUBJECTS", "RegisterAccount")
-        context = get_setting_or({}, "EMAIL_CONTEXT")
-        if subject and template:
-            send_email(
-                to_email=kwargs["email"],
-                subject=subject,
-                template=template,
-                context=dict(**context, kwargs=kwargs, result=result),
-            )
+    def send_email(cls, result, **kwargs):
+        # The child class may call 'send_activation_email'
+        pass
+
+
+
+def send_activation_email(result, email, **kwargs):
+    template = get_setting_or(None, "EMAIL_TEMPLATES", "RegisterAccount")
+    subject = get_setting_or(None, "EMAIL_SUBJECTS", "RegisterAccount")
+    context = get_setting_or({}, "EMAIL_CONTEXT")
+    if subject and template:
+        send_email(
+            to_email=email,
+            subject=subject,
+            template=template,
+            context=dict(**context, kwargs=kwargs, result=result),
+        )

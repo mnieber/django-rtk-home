@@ -23,5 +23,5 @@ class RequestPasswordReset(mutations.RequestPasswordReset):
         return result
 
     @classmethod
-    def extract_output_params(cls, result):
+    def get_output_values(cls, result):
         return {"password_reset_token": extract_token(result, "password_reset_token")}

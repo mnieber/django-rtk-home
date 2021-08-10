@@ -1,1 +1,1 @@
-from .me import MeQuery  # noqa
+from .me import Me  # noqa

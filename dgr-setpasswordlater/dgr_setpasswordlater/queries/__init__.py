@@ -1,6 +1,6 @@
 import graphene
-from django_graphql_registration.queries import MeQuery
+from django_graphql_registration.queries import Me
 
 
-class Query(MeQuery, graphene.ObjectType):
+class Query(Me, graphene.ObjectType):
     pass

@@ -4,6 +4,7 @@ from dgr_setpasswordlater.mutations.utils import extract_token
 from django_graphql_registration.utils.errors import get_errors
 from django_graphql_registration.utils.get_backend import get_backend
 from django_graphql_registration.utils.get_setting_or import get_setting_or
+from django_graphql_registration.utils.get_validator import get_validator
 
 
 class RegisterAccount(mutations.RegisterAccount):
@@ -17,6 +18,10 @@ class RegisterAccount(mutations.RegisterAccount):
     activation_token = graphene.String()
 
     @classmethod
+    def validate_args(cls, errors, email, **kwargs):
+        get_validator().validate_email(errors, email)
+
+    @classmethod
     def run(cls, errors, **kwargs):
         result = get_backend().register_account(errors, **kwargs)
 
@@ -27,5 +32,9 @@ class RegisterAccount(mutations.RegisterAccount):
         return result
 
     @classmethod
-    def extract_output_params(cls, result):
+    def send_email(cls, result, **kwargs):
+        mutations.send_activation_email(result, kwargs['email'], **kwargs)
+
+    @classmethod
+    def get_output_values(cls, result):
         return {"activation_token": extract_token(result, "activation_token")}
