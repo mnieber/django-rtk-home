@@ -2,6 +2,7 @@ import graphene
 from django_graphql_registration.mutations import ObtainJSONWebToken
 
 from .activateaccount import ActivateAccount
+from .changepassword import ChangePassword
 from .registeraccount import RegisterAccount
 from .requestpasswordreset import RequestPasswordReset
 from .resetpassword import ResetPassword
@@ -12,4 +13,5 @@ class Mutation(graphene.ObjectType):
     activate_account = ActivateAccount.Field()
     request_password_reset = RequestPasswordReset.Field()
     reset_password = ResetPassword.Field()
+    change_password = ChangePassword.Field()
     token_auth = ObtainJSONWebToken.Field()

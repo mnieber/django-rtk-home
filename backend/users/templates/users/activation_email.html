@@ -1,0 +1,21 @@
+{% block subject %}
+Welcome to ProjectTogether!
+{% endblock subject %}
+
+{% block text_body %}
+Please go to the following page to activate your account:
+{{ domain }}/activate-account/{{ result.activation_token }}
+
+The ProjectTogether team
+{% endblock text_body %}
+
+{% block html_body %}
+
+<p>Please go to the following page to activate your account:</p>
+<p><a href="{{ domain }}/activate-account/{{ result.activation_token }}">
+{{ domain }}/activate-account/{{ result.activation_token }}
+</a></p>
+
+<p>The ProjectTogether team</p>
+
+{% endblock html_body %}

@@ -1,12 +1,13 @@
-import dgr_setpasswordlater.schema
+import dgr_setpasswordlater.mutations
+import dgr_setpasswordlater.queries
 import graphene
 
 
-class Query(dgr_setpasswordlater.schema.Query, graphene.ObjectType):
+class Query(dgr_setpasswordlater.queries.Query, graphene.ObjectType):
     pass
 
 
-class Mutation(dgr_setpasswordlater.schema.Mutation, graphene.ObjectType):
+class Mutation(dgr_setpasswordlater.mutations.Mutation, graphene.ObjectType):
     pass
 
 

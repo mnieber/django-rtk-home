@@ -1,8 +1,12 @@
 import django_graphql_registration.mutations as mutations
 import graphene
 from dgr_setpasswordlater.mutations.utils import extract_token
-from django_graphql_registration.utils import (get_backend, get_errors,
-                                               get_setting_or, get_validator)
+from django_graphql_registration.utils import (
+    get_backend,
+    get_errors,
+    get_setting_or,
+    get_validator,
+)
 
 
 class RegisterAccount(mutations.RegisterAccount):
@@ -31,7 +35,7 @@ class RegisterAccount(mutations.RegisterAccount):
 
     @classmethod
     def send_email(cls, result, **kwargs):
-        mutations.send_activation_email(result, kwargs['email'], **kwargs)
+        mutations.send_activation_email(result, **kwargs)
 
     @classmethod
     def get_output_values(cls, result):

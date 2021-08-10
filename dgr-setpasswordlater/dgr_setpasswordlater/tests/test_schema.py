@@ -1,9 +1,14 @@
+import uuid
+
 import pytest
 from dgr_setpasswordlater.models import ActivationToken, PasswordResetToken
 from django.test import Client
 
 activation_token_dict = dict(
-    email="user@test.com", token="123", accepts_terms=True, terms_accepted="1.0.0"
+    email="user@test.com",
+    token=uuid.uuid4(),
+    accepts_terms=True,
+    terms_version_accepted="1.0.0",
 )
 
 
@@ -24,7 +29,7 @@ class TestSchema:
             registerAccount(
                 email: "{email}",
                 acceptsTerms: {acceptsTerms},
-                termsAccepted: "{termsAccepted}",
+                termsVersionAccepted: "{termsVersionAccepted}",
             ) {{
                 success,
                 errors
@@ -32,7 +37,7 @@ class TestSchema:
         }}""".format(
             email="tester@test.com",
             acceptsTerms="true",
-            termsAccepted="1.0.0",
+            termsVersionAccepted="1.0.0",
         )
         response = client.post("/graphql/", dict(query=query))
 
@@ -91,7 +96,7 @@ class TestSchema:
             }}
         }}""".format(
             password_reset_token=password_reset_token.token,
-            password="bar",
+            password="foobarbaz456",
         )
 
         response = client.post("/graphql/", dict(query=query))
@@ -101,13 +106,35 @@ class TestSchema:
             "data": {"resetPassword": {"success": True, "errors": {}}}
         }
 
+        query = """mutation {{
+            changePassword(
+                email: "{email}",
+                password: "{password}",
+                newPassword: "{new_password}",
+            ) {{
+                success,
+                errors
+            }}
+        }}""".format(
+            email="tester@test.com",
+            password="foobarbaz456",
+            new_password="foobarbaz789",
+        )
+
+        response = client.post("/graphql/", dict(query=query))
+
+        # check that the response is as expected
+        assert response.json() == {
+            "data": {"changePassword": {"success": True, "errors": {}}}
+        }
+
     @pytest.mark.django_db()
     def test_bad_email(self, client: Client):
         query = """mutation {{
             registerAccount(
                 email: "{email}",
                 acceptsTerms: {acceptsTerms},
-                termsAccepted: "{termsAccepted}",
+                termsVersionAccepted: "{termsVersionAccepted}",
             ) {{
                 success,
                 errors
@@ -115,7 +142,7 @@ class TestSchema:
         }}""".format(
             email="tester.com",
             acceptsTerms="true",
-            termsAccepted="1.0.0",
+            termsVersionAccepted="1.0.0",
         )
         response = client.post("/graphql/", dict(query=query))
 

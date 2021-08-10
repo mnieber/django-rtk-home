@@ -10,7 +10,9 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, email, username, password, accepts_terms, terms_accepted):
+    def create_user(
+        self, email, username, password, accepts_terms, terms_version_accepted
+    ):
         if not email:
             raise ValueError("Users must have an email address.")
         if not username:
@@ -19,7 +21,7 @@ class UserManager(BaseUserManager):
             raise ValueError("Users must accept the terms.")
         user = self.model(email=self.normalize_email(email), username=username)
         user.accepts_terms = accepts_terms
-        user.terms_accepted = terms_accepted
+        user.terms_version_accepted = terms_version_accepted
         user.set_password(password)
         user.save()  # using=self._db
         return user
@@ -31,7 +33,7 @@ class UserManager(BaseUserManager):
             username="super",
             password=password,
             accepts_terms=True,
-            terms_accepted=terms_version,
+            terms_version_accepted=terms_version,
         )
         user.is_superuser = True
         user.is_staff = True
@@ -52,7 +54,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField("active", default=True)
     date_joined = models.DateTimeField("date joined", auto_now_add=True)
     accepts_terms = models.BooleanField()
-    terms_accepted = models.CharField(max_length=10, default="1.0.0")
+    terms_version_accepted = models.CharField(max_length=10, default="1.0.0")
 
     def get_full_name(self):
         return self.username

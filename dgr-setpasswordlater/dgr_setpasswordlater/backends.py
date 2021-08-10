@@ -1,7 +1,7 @@
 import uuid
 
-from django.contrib.auth import get_user_model
-from django_graphql_registration.utils.errors import count_errors, get_errors
+from django.contrib.auth import authenticate, get_user_model
+from django_graphql_registration.utils import count_errors, get_errors
 
 from dgr_setpasswordlater.models import ActivationToken, PasswordResetToken
 from dgr_setpasswordlater.utils.consume_activation_token import consume_activation_token
@@ -51,7 +51,7 @@ class Backend:
             not get_user_model().objects.filter(email=email).exists()
             and not ActivationToken.objects.filter(email=email).exists()
         ):
-            get_errors(errors, "email").append("EMAIL_UNKNOWN")
+            get_errors(errors, "email").append("ACCOUNT_UNKNOWN")
             return result
 
         password_reset_token, _ = PasswordResetToken.objects.get_or_create(email=email)
@@ -70,17 +70,38 @@ class Backend:
 
         if not password_reset_token:
             get_errors(errors, "password_reset_token").append("NOT_FOUND")
-        else:
-            user = result["user"] = get_user_model().objects.filter(
-                email=password_reset_token.email
-            ).first() or consume_activation_token(
-                password, email=password_reset_token.email
-            )
-            if user:
-                user.set_password(password)
-                user.save()
-                password_reset_token.delete()
-            else:
-                get_errors(errors, "password_reset_token").append("EMAIL_UNKNOWN")
+            return result
 
+        user = result["user"] = get_user_model().objects.filter(
+            email=password_reset_token.email
+        ).first() or consume_activation_token(
+            password, email=password_reset_token.email
+        )
+        if user:
+            user.set_password(password)
+            user.save()
+            password_reset_token.delete()
+        else:
+            get_errors(errors, "password_reset_token").append("ACCOUNT_UNKNOWN")
+
+        return result
+
+    def change_password(self, errors, email, password, new_password, **kwargs):
+        result = dict(user=None)
+        if count_errors(errors):
+            return result
+
+        user = get_user_model().objects.filter(email=email).first()
+        if not user:
+            get_errors(errors, "email").append("ACCOUNT_UNKNOWN")
+            return result
+
+        username = getattr(user, get_user_model().USERNAME_FIELD)
+        is_authenticated = authenticate(username=username, password=password)
+        if not is_authenticated:
+            get_errors(errors, "password").append("INVALID_CREDENTIALS")
+            return result
+
+        user.set_password(new_password)
+        user.save()
         return result

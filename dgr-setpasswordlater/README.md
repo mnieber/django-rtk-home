@@ -85,3 +85,19 @@ Returns:
 - `errors['password_reset_token'] = ['NOT_FOUND']` if the token is not found
 - `errors['password_reset_token'] = ['ACCOUNT_UNKNOWN']` if the email is unknown
   and not `HIDE_ACCOUNT_EXISTENCE`
+
+### changePassword (mutations.ChangePassword)
+
+This endpoint verifies the current password and then changes the password.
+
+Takes arguments:
+
+- `email`
+- `password`
+- `new_password`
+
+Returns:
+
+- `errors['email'] = ['ACCOUNT_UNKNOWN']` if the email is unknown and not `HIDE_ACCOUNT_EXISTENCE`
+- `errors['password'] = ['INVALID_CREDENTIALS']` if the password is invalid
+- `errors['new_password'] = ['TOO_SHORT']` if the new password is too short

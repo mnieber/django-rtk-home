@@ -1,9 +1,13 @@
 import graphene
 from django_graphql_registration.signals import account_registered
-from django_graphql_registration.utils import (count_errors, get_backend,
-                                               get_setting_or,
-                                               get_setting_or_throw,
-                                               reformat_errors, send_email)
+from django_graphql_registration.utils import (
+    count_errors,
+    get_backend,
+    get_setting_or,
+    get_setting_or_throw,
+    reformat_errors,
+    send_email,
+)
 from graphene.types.generic import GenericScalar
 
 
@@ -49,7 +53,6 @@ class RegisterAccount(graphene.Mutation):
     def send_email(cls, result, **kwargs):
         # The child class may call 'send_activation_email'
         pass
-
 
 
 def send_activation_email(result, email, **kwargs):

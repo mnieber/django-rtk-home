@@ -42,7 +42,7 @@ Different registration workflows can use the same backend (see: Compatibility be
 
 A particular registration workflow is achieved by subclassing the endpoints
 in this package: the `RegisterAccount`, `ActivateAccount`, `RequestPasswordReset`,
-`ResetPassword` mutation and the `Me` query.
+`ResetPassword`, `ChangePassword` mutation and the `Me` query.
 
 ## Settings
 

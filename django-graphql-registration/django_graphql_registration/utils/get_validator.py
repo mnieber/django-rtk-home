@@ -1,5 +1,5 @@
-from django_graphql_registration.utils import (get_setting_or_throw,
-                                               import_class)
+from django_graphql_registration.utils.get_setting_or import get_setting_or_throw
+from django_graphql_registration.utils.import_class import import_class
 
 _validator = None
 
