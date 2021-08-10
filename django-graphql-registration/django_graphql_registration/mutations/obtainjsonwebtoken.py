@@ -1,7 +1,7 @@
 import graphene
 import graphql_jwt.exceptions
 import graphql_jwt.mutations
-from django_graphql_registration.utils.errors import reformat_errors
+from django_graphql_registration.utils import reformat_errors
 from graphene.types.generic import GenericScalar
 
 

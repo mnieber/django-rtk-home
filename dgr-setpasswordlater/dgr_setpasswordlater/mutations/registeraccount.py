@@ -1,10 +1,8 @@
 import django_graphql_registration.mutations as mutations
 import graphene
 from dgr_setpasswordlater.mutations.utils import extract_token
-from django_graphql_registration.utils.errors import get_errors
-from django_graphql_registration.utils.get_backend import get_backend
-from django_graphql_registration.utils.get_setting_or import get_setting_or
-from django_graphql_registration.utils.get_validator import get_validator
+from django_graphql_registration.utils import (get_backend, get_errors,
+                                               get_setting_or, get_validator)
 
 
 class RegisterAccount(mutations.RegisterAccount):

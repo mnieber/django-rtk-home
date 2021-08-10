@@ -1,4 +1,4 @@
-from django_graphql_registration.utils.get_setting_or import get_setting_or
+from django_graphql_registration.utils import get_setting_or
 
 
 def extract_token(result, token_name):

@@ -1,6 +1,6 @@
 import re
 
-from django_graphql_registration.utils.errors import get_errors
+from django_graphql_registration.utils import get_errors
 
 
 def _is_valid_email(email):

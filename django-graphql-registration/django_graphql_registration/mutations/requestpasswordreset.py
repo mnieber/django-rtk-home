@@ -1,10 +1,8 @@
 import graphene
 from django_graphql_registration.signals import password_reset_requested
-from django_graphql_registration.utils.errors import (count_errors,
-                                                      reformat_errors)
-from django_graphql_registration.utils.get_backend import get_backend
-from django_graphql_registration.utils.get_setting_or import get_setting_or
-from django_graphql_registration.utils.send_email import send_email
+from django_graphql_registration.utils import (count_errors, get_backend,
+                                               get_setting_or, reformat_errors,
+                                               send_email)
 from graphene.types.generic import GenericScalar
 
 

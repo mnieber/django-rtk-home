@@ -3,7 +3,7 @@ from typing import cast
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django_graphql_registration.utils.get_setting_or import get_setting_or
+from django_graphql_registration.utils import get_setting_or
 
 
 def send_email(to_email, subject, template, context):

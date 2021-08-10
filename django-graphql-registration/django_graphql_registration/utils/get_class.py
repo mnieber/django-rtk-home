@@ -1,5 +1,4 @@
-from django_graphql_registration.utils.get_setting_or import get_setting_or
-from django_graphql_registration.utils.import_class import import_class
+from django_graphql_registration.utils import get_setting_or, import_class
 
 _default_classes = {}
 

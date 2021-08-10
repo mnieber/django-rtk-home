@@ -4,7 +4,7 @@
 
 The django-graphql-registration package provides a skeleton for implementing
 account registration. If you are looking for a complete registration solution,
-check out dgr_setpasswordlater, which extends this skeleton.
+check out dgr_setpasswordlater.
 I created this package because I was unhappy with existing graphl-based solutions.
 In particular, I wanted the registration code to be simpler, cleaner and more
 customizable.
@@ -20,8 +20,8 @@ customizable.
 ## Separation of concerns
 
 The goal of this package is to support various registration workflows.
-In some workflow, you will ask the user for a password when they sign up.
-In other workflows, you let the user choose a password when then activate
+In some workflow, the user is asked for a password when they sign up.
+In other workflows, the user chooses a password when then activate
 their account. Yet another workflow might not use any passwords at all, only
 a magic link sent by email.
 All these workflows would still have a lot of shared code for input validation,
@@ -43,6 +43,36 @@ Different registration workflows can use the same backend (see: Compatibility be
 A particular registration workflow is achieved by subclassing the endpoints
 in this package: the `RegisterAccount`, `ActivateAccount`, `RequestPasswordReset`,
 `ResetPassword` mutation and the `Me` query.
+
+## Settings
+
+The following example shows which settings are used:
+
+```
+DJANGO_GRAPHQL_REGISTRATION = {
+    "BACKEND": "dgr_setpasswordlater.backends.Backend",
+    "VALIDATOR": "django_graphql_registration.validators.Validator",
+    "EMAIL_TEMPLATES": {
+        "RegisterAccount": "users/activation_email.html",
+        "RequestPasswordReset": "users/password_reset_email.html",
+    },
+    "EMAIL_SUBJECTS": {
+        "RegisterAccount": "Activate your BrandNewSite account",
+        "RequestPasswordReset": "Reset your BrandNewSite password",
+    },
+    "EMAIL_CONTEXT": {
+        "any key": "value pair you want to use in your templates",
+    },
+    "EMAIL_FROM": "noreply@brandnewsite.org",
+}
+```
+
+### BACKEND
+
+## Example of extending an endpoint
+
+See the `RegisterAccount` [base class](./mutations/registeraccount.py) and this
+[child class](https://github.com/mnieber/django-graphql-registration/blob/master/dgr-setpasswordlater/dgr_setpasswordlater/mutations/activateaccount.py).
 
 ## How to understand this package
 

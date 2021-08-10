@@ -1,10 +1,9 @@
 import graphene
 from django_graphql_registration.signals import account_registered
-from django_graphql_registration.utils.errors import (count_errors,
-                                                      reformat_errors)
-from django_graphql_registration.utils.get_backend import get_backend
-from django_graphql_registration.utils.get_setting_or import get_setting_or
-from django_graphql_registration.utils.send_email import send_email
+from django_graphql_registration.utils import (count_errors, get_backend,
+                                               get_setting_or,
+                                               get_setting_or_throw,
+                                               reformat_errors, send_email)
 from graphene.types.generic import GenericScalar
 
 
@@ -54,8 +53,8 @@ class RegisterAccount(graphene.Mutation):
 
 
 def send_activation_email(result, email, **kwargs):
-    template = get_setting_or(None, "EMAIL_TEMPLATES", "RegisterAccount")
-    subject = get_setting_or(None, "EMAIL_SUBJECTS", "RegisterAccount")
+    template = get_setting_or_throw("EMAIL_TEMPLATES", "RegisterAccount")
+    subject = get_setting_or_throw("EMAIL_SUBJECTS", "RegisterAccount")
     context = get_setting_or({}, "EMAIL_CONTEXT")
     if subject and template:
         send_email(

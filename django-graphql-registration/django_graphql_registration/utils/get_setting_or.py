@@ -8,3 +8,11 @@ def get_setting_or(default_value, *path):
             return default_value
         result = result[p]
     return result
+
+
+def get_setting_or_throw(*path):
+    setting = get_setting_or(None, path)
+    if setting is None:
+        key = "".join([f"['{x}']" for x in path])
+        raise Exception(f"Missing configuration key: settings.DJANGO_GRAPHQL_REGISTRATION{key}")
+    return setting

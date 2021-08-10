@@ -1,1 +1,87 @@
 # dgr-setpasswordlater
+
+This package is an implementation of django-graphql-registration that
+asks the user to set their password when they activate their account.
+
+## Endpoints
+
+All endpoints return:
+
+- success (boolean)
+- errors (map of fieldname to list of error codes)
+
+## Settings
+
+All settings are stored in `settings.DJANGO_GRAPHQL_REGISTRATION`. Below, we use
+`FOO` as a shortcut for `settings.DJANGO_GRAPHQL_REGISTRATION['FOO']`.
+
+### DANGEROUSLY_EXPOSE_TOKENS (False)
+
+This setting determines if endpoints return activation and password reset tokens. Only
+use this setting for testing, never in production.
+
+### HIDE_ACCOUNT_EXISTENCE (True)
+
+If this setting is `True` then the package will do its best to hide information from the
+user about which emails are known. For example, when you register and the email is already taken,
+it will just ignore the request and not return an error.
+
+### registerAccount (mutations.RegisterAccount)
+
+This endpoint creates an activation token, but it does not create a user account.
+It sends the token to the user by email.
+
+Takes arguments:
+
+- `email`
+
+Returns:
+
+- `activation_token` if `DANGEROUSLY_EXPOSE_TOKENS`
+- `errors['email'] = ['INVALID_EMAIL']` if the email is not valid
+- `errors['email'] = ['ALREADY_TAKEN']` if the email is taken and not `HIDE_ACCOUNT_EXISTENCE`
+
+### activateAccount (mutations.ActivateAccount)
+
+This endpoint verifies the activation token and creates the user account with the given password.
+It then deletes the activation token.
+
+Takes arguments:
+
+- `activation_token`
+- `password`
+
+Returns:
+
+- `errors['password'] = ['TOO_SHORT']` if the password is shorter than 8 characters
+- `errors['activation_token'] = ['NOT_FOUND']` if the token was not found
+
+### requestPasswordReset (mutations.RequestPasswordReset)
+
+This endpoint creates a password reset token. It sends the token to the user by email.
+
+Takes arguments:
+
+- `email`
+
+Returns:
+
+- `password_reset_token` if `DANGEROUSLY_EXPOSE_TOKENS`
+- `errors['email'] = ['ACCOUNT_UNKNOWN']` if the email is unknown and not `HIDE_ACCOUNT_EXISTENCE`
+
+### resetPassword (mutations.ResetPassword)
+
+This endpoint verifies the password reset token, changes the password and deletes the token.
+If there is no account with the given email, but there is an activation token for that email,
+then it activates the account with the given password.
+
+Takes arguments:
+
+- `password_reset_token`
+- `password`
+
+Returns:
+
+- `errors['password_reset_token'] = ['NOT_FOUND']` if the token is not found
+- `errors['password_reset_token'] = ['ACCOUNT_UNKNOWN']` if the email is unknown
+  and not `HIDE_ACCOUNT_EXISTENCE`
