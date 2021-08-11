@@ -1,7 +1,12 @@
 import django_graphql_registration.mutations as mutations
 import graphene
 from dgr_setpasswordlater.mutations.utils import extract_token
-from django_graphql_registration.utils import get_backend, get_errors, get_setting_or
+from django_graphql_registration.utils import (
+    get_backend,
+    get_errors,
+    get_setting_or,
+    get_validator,
+)
 
 
 class RequestPasswordReset(mutations.RequestPasswordReset):
@@ -9,6 +14,10 @@ class RequestPasswordReset(mutations.RequestPasswordReset):
         email = graphene.String()
 
     password_reset_token = graphene.String()
+
+    @classmethod
+    def validate_args(cls, errors, email, **kwargs):
+        get_validator().validate_email(errors, email)
 
     @classmethod
     def run(cls, errors, **kwargs):

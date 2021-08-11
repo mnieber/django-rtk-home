@@ -13,7 +13,7 @@ setup(
     entry_points={},
     data_files=[],
     cmdclass={},
-    install_requires=["Django", "graphene-django"],
+    install_requires=["Django", "graphene-django", "django-graphql-jwt"],
     zip_safe=False,
     python_requires=">=3.6",
 )

@@ -1,7 +1,6 @@
 import graphene
 from django_graphql_registration.signals import account_activated
-from django_graphql_registration.utils import (count_errors, get_backend,
-                                               get_validator, reformat_errors)
+from django_graphql_registration.utils import count_errors, get_backend, reformat_errors
 from graphene.types.generic import GenericScalar
 
 
@@ -36,8 +35,8 @@ class ActivateAccount(graphene.Mutation):
         return {}
 
     @classmethod
-    def validate_args(cls, errors, password, **kwargs):
-        get_validator().validate_password(errors, password)
+    def validate_args(cls, errors, **kwargs):
+        pass
 
     @classmethod
     def on_result(cls, errors, result, **kwargs):

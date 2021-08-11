@@ -18,5 +18,6 @@ DJANGO_GRAPHQL_REGISTRATION = {
         "RequestPasswordReset": "Reset your BrandNewSite password",
     },
     "EMAIL_FROM": "noreply@brandnewsite.org",
-    "DANGEROUSLY_EXPOSE_TOKENS": True,
+    "DANGEROUSLY_EXPOSE_TOKENS": False,
+    "HIDE_ACCOUNT_EXISTENCE": True,
 }
