@@ -7,7 +7,7 @@ AUTHENTICATION_BACKENDS = [
 AUTH_USER_MODEL = "users.User"
 
 DJANGO_GRAPHQL_REGISTRATION = {
-    "BACKEND": "dgr_setpasswordlater.backends.Backend",
+    "BACKEND": "dgr_activatewithpassword.backends.Backend",
     "VALIDATOR": "django_graphql_registration.validators.Validator",
     "EMAIL_TEMPLATES": {
         "RegisterAccount": "users/activation_email.html",

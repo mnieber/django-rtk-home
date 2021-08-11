@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from dgr_setpasswordlater import models
+from dgr_activatewithpassword import models
 
 
 class ActivationTokenAdmin(admin.ModelAdmin):

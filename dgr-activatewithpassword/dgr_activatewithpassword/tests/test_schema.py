@@ -1,8 +1,8 @@
 import uuid
 
 import pytest
-from dgr_setpasswordlater.models import ActivationToken, PasswordResetToken
-from dgr_setpasswordlater.tests.mutations import (
+from dgr_activatewithpassword.models import ActivationToken, PasswordResetToken
+from dgr_activatewithpassword.tests.mutations import (
     activate_account_mutation,
     change_password_mutation,
     register_account_mutation,
@@ -184,6 +184,7 @@ class TestSchema:
         settings.DJANGO_GRAPHQL_REGISTRATION["DANGEROUSLY_EXPOSE_TOKENS"] = True
         response = client.post("/graphql/", dict(query=query))
         assert response.json()["data"]["registerAccount"]["activationToken"]
+        settings.DJANGO_GRAPHQL_REGISTRATION["DANGEROUSLY_EXPOSE_TOKENS"] = False
 
     @pytest.mark.django_db()
     def test_dangerously_expose_password_reset_token(
@@ -200,6 +201,7 @@ class TestSchema:
         settings.DJANGO_GRAPHQL_REGISTRATION["DANGEROUSLY_EXPOSE_TOKENS"] = True
         response = client.post("/graphql/", dict(query=query))
         assert response.json()["data"]["requestPasswordReset"]["passwordResetToken"]
+        settings.DJANGO_GRAPHQL_REGISTRATION["DANGEROUSLY_EXPOSE_TOKENS"] = False
 
     @pytest.mark.django_db()
     def test_hide_account_existence(self, client: Client, settings, user_account):
@@ -216,6 +218,7 @@ class TestSchema:
         assert response.json() == {
             "data": {"requestPasswordReset": {"errors": {"email": ["ACCOUNT_UNKNOWN"]}}}
         }
+        settings.DJANGO_GRAPHQL_REGISTRATION["HIDE_ACCOUNT_EXISTENCE"] = True
 
         query = register_account_mutation(
             email=user_account.email,
@@ -224,7 +227,6 @@ class TestSchema:
             output_values=["errors"],
         )
 
-        settings.DJANGO_GRAPHQL_REGISTRATION["HIDE_ACCOUNT_EXISTENCE"] = True
         response = client.post("/graphql/", dict(query=query))
         assert response.json() == {"data": {"registerAccount": {"errors": {}}}}
 
@@ -233,3 +235,4 @@ class TestSchema:
         assert response.json() == {
             "data": {"registerAccount": {"errors": {"email": ["ALREADY_TAKEN"]}}}
         }
+        settings.DJANGO_GRAPHQL_REGISTRATION["HIDE_ACCOUNT_EXISTENCE"] = True

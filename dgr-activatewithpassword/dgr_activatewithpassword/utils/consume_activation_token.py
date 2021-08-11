@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 
-from dgr_setpasswordlater.models import ActivationToken
+from dgr_activatewithpassword.models import ActivationToken
 
 
 def _create_user(activation_token, password):

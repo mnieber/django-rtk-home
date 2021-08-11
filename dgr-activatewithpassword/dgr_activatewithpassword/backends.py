@@ -3,8 +3,10 @@ import uuid
 from django.contrib.auth import authenticate, get_user_model
 from django_graphql_registration.utils import count_errors, get_errors
 
-from dgr_setpasswordlater.models import ActivationToken, PasswordResetToken
-from dgr_setpasswordlater.utils.consume_activation_token import consume_activation_token
+from dgr_activatewithpassword.models import ActivationToken, PasswordResetToken
+from dgr_activatewithpassword.utils.consume_activation_token import (
+    consume_activation_token,
+)
 
 
 class Backend:

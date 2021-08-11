@@ -4,7 +4,7 @@
 
 The django-graphql-registration package provides a skeleton for implementing
 account registration. If you are looking for a complete registration solution,
-check out dgr_setpasswordlater.
+check out dgr_activatewithpassword.
 I created this package because I was unhappy with existing graphl-based solutions.
 In particular, I wanted the registration code to be simpler, cleaner and more
 customizable.
@@ -50,7 +50,7 @@ The following example shows which settings are used:
 
 ```
 DJANGO_GRAPHQL_REGISTRATION = {
-    "BACKEND": "dgr_setpasswordlater.backends.Backend",
+    "BACKEND": "dgr_activatewithpassword.backends.Backend",
     "VALIDATOR": "django_graphql_registration.validators.Validator",
     "EMAIL_TEMPLATES": {
         "RegisterAccount": "users/activation_email.html",
@@ -72,7 +72,7 @@ DJANGO_GRAPHQL_REGISTRATION = {
 ## Example of extending an endpoint
 
 See the `RegisterAccount` [base class](./mutations/registeraccount.py) and this
-[child class](https://github.com/mnieber/django-graphql-registration/blob/master/dgr-setpasswordlater/dgr_setpasswordlater/mutations/activateaccount.py).
+[child class](https://github.com/mnieber/django-graphql-registration/blob/master/dgr-activatewithpassword/dgr_activatewithpassword/mutations/activateaccount.py).
 
 ## How to understand this package
 
@@ -80,7 +80,7 @@ This package is a basis for implementing registration workflows. To understand
 how to do this, you will have to study the source code, using the following pointers:
 
 - inspect the code for the endpoints in the `mutations` and `queries` directories
-- see in the `dgr_setpasswordlater` pip package see how these endpoints are extended
+- see in the `dgr_activatewithpassword` pip package see how these endpoints are extended
 - each endpoint subclass can add GraphQL input and output values
 - `get_validator()` is used in `validate_args()` to validate input arguments
 - `get_backend()` is used in `run()` to do actual registration work

@@ -1,4 +1,4 @@
-# dgr-setpasswordlater
+# dgr-activatewithpassword
 
 This package is an implementation of django-graphql-registration that
 asks the user to set their password when they activate their account.
@@ -26,7 +26,7 @@ django-graphql-registration package can be set up:
 
 ```
 DJANGO_GRAPHQL_REGISTRATION = {
-    "BACKEND": "dgr_setpasswordlater.backends.Backend",
+    "BACKEND": "dgr_activatewithpassword.backends.Backend",
     "VALIDATOR": "django_graphql_registration.validators.Validator",
     "EMAIL_TEMPLATES": {
         "RegisterAccount": "users/activation_email.html",

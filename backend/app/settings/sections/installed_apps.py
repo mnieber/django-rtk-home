@@ -18,7 +18,7 @@ THIRD_PARTY_APPS = [
 LOCAL_APPS = [
     "api.apps.ApiConfig",
     "app.apps.AppConfig",
-    "dgr_setpasswordlater.apps.Config",
+    "dgr_activatewithpassword.apps.Config",
     "users.apps.UsersConfig",
 ]
 

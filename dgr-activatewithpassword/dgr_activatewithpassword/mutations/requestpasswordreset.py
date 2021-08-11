@@ -1,6 +1,6 @@
 import django_graphql_registration.mutations as mutations
 import graphene
-from dgr_setpasswordlater.mutations.utils import extract_token
+from dgr_activatewithpassword.mutations.utils import extract_token
 from django_graphql_registration.utils import (
     get_backend,
     get_errors,
