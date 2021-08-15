@@ -6,9 +6,9 @@ AUTHENTICATION_BACKENDS = [
 
 AUTH_USER_MODEL = "users.User"
 
-DJANGO_GRAPHQL_REGISTRATION = {
-    "BACKEND": "dgr_activatewithpassword.backends.Backend",
-    "VALIDATOR": "django_graphql_registration.validators.Validator",
+DJANGO_RTK = {
+    "BACKEND": "django_rtk_green.backends.Backend",
+    "VALIDATOR": "django_rtk.validators.Validator",
     "EMAIL_TEMPLATES": {
         "RegisterAccount": "users/activation_email.html",
         "RequestPasswordReset": "users/password_reset_email.html",

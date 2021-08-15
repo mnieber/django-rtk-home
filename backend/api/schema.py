@@ -1,13 +1,13 @@
-import dgr_activatewithpassword.mutations
-import dgr_activatewithpassword.queries
+import django_rtk_green.mutations
+import django_rtk_green.queries
 import graphene
 
 
-class Query(dgr_activatewithpassword.queries.Query, graphene.ObjectType):
+class Query(django_rtk_green.queries.Query, graphene.ObjectType):
     pass
 
 
-class Mutation(dgr_activatewithpassword.mutations.Mutation, graphene.ObjectType):
+class Mutation(django_rtk_green.mutations.Mutation, graphene.ObjectType):
     pass
 
 
