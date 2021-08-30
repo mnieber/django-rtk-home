@@ -20,4 +20,7 @@ DJANGO_RTK = {
     "EMAIL_FROM": "noreply@brandnewsite.org",
     "DANGEROUSLY_EXPOSE_TOKENS": False,
     "HIDE_ACCOUNT_EXISTENCE": True,
+    "REQUIRE_USERNAME": False,
 }
+
+TERMS_VERSION = "1.0"

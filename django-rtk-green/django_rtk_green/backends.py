@@ -4,9 +4,7 @@ from django.contrib.auth import authenticate, get_user_model
 from django_rtk.utils import count_errors, get_errors
 
 from django_rtk_green.models import ActivationToken, PasswordResetToken
-from django_rtk_green.utils.consume_activation_token import (
-    consume_activation_token,
-)
+from django_rtk_green.utils import create_user
 
 
 class Backend:
@@ -31,14 +29,20 @@ class Backend:
         result["activation_token"] = activation_token.token.hex
         return result
 
-    def activate_account(self, errors, activation_token, password, **kwargs):
+    def activate_account(self, errors, activation_token, **kwargs):
         result = dict(user=None)
         if count_errors(errors):
             return result
 
-        user = result["user"] = consume_activation_token(
-            password, token=uuid.UUID(activation_token)
-        )
+        activation_token = ActivationToken.objects.filter(
+            token=uuid.UUID(activation_token)
+        ).first()
+        if activation_token:
+            user = result["user"] = create_user(activation_token, **kwargs)
+            activation_token.delete()
+        else:
+            user = None
+
         if not user:
             get_errors(errors, "activation_token").append("NOT_FOUND")
 
@@ -74,11 +78,10 @@ class Backend:
             get_errors(errors, "password_reset_token").append("NOT_FOUND")
             return result
 
-        user = result["user"] = get_user_model().objects.filter(
-            email=password_reset_token.email
-        ).first() or consume_activation_token(
-            password, email=password_reset_token.email
+        user = result["user"] = (
+            get_user_model().objects.filter(email=password_reset_token.email).first()
         )
+
         if user:
             user.set_password(password)
             user.save()

@@ -16,3 +16,7 @@ class Validator:
     def validate_password(self, errors, password):
         if len(password) < 8:
             get_errors(errors, "password").append("TOO_SHORT")
+
+    def validate_username(self, errors, username):
+        if len(username) < 2:
+            get_errors(errors, "username").append("TOO_SHORT")
