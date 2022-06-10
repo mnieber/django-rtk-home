@@ -20,7 +20,7 @@ customizable.
 ## Separation of concerns
 
 The goal of this package is to support various registration workflows.
-In some workflow, the user is asked for a password when they sign up.
+In some workflows, the user is asked for a password when they sign up.
 In other workflows, the user chooses a password when then activate
 their account. Yet another workflow might not use any passwords at all, only
 a magic link sent by email.
@@ -79,8 +79,8 @@ See the `RegisterAccount` [base class](./mutations/registeraccount.py) and this
 This package is a basis for implementing registration workflows. To understand
 how to do this, you will have to study the source code, using the following pointers:
 
-- inspect the code for the endpoints in the `mutations` and `queries` directories
-- see in the `django_rtk_green` pip package see how these endpoints are extended
+- inspect the code for the GraphQL endpoints in the `mutations` and `queries` directories
+- see how these endpoints are extended in the `django_rtk_green` pip package 
 - each endpoint subclass can add GraphQL input and output values
 - `get_validator()` is used in `validate_args()` to validate input arguments
 - `get_backend()` is used in `run()` to do actual registration work
