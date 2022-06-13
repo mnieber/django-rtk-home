@@ -1,12 +1,7 @@
 import django_rtk.mutations as mutations
 import graphene
+from django_rtk.utils import get_backend, get_errors, get_setting_or, get_validator
 from django_rtk_green.mutations.utils import extract_token
-from django_rtk.utils import (
-    get_backend,
-    get_errors,
-    get_setting_or,
-    get_validator,
-)
 
 
 class RegisterAccount(mutations.RegisterAccount):

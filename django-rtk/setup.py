@@ -2,9 +2,11 @@ from setuptools import find_packages, setup
 
 setup(
     name="django-rtk",
-    version="0.1.0",
+    version="0.1.1",
     description="Abstract basis for registrating Django users using graphql",
-    url="https://github.com/mnieber/django-rtk",
+    long_description="Abstract basis for registrating Django users using graphql",
+    long_description_content_type="text/x-rst",
+    url="https://github.com/mnieber/django-graphql-registration/blob/main/django-rtk/README.md",
     author="Maarten Nieber",
     author_email="hallomaarten@yahoo.com",
     license="MIT",
