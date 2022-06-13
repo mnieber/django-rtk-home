@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="django-rtk",
-    version="0.1.2",
+    version="0.1.3",
     description="Abstract basis for registrating Django users using graphql",
     long_description="Abstract basis for registrating Django users using graphql",
     long_description_content_type="text/x-rst",
