@@ -4,7 +4,7 @@
 
 The django-rtk package provides a skeleton for implementing
 account registration. If you are looking for a complete registration solution,
-check out django_rtk_green.
+check out django-rtk-green.
 I created this package because I was unhappy with existing graphl-based solutions.
 In particular, I wanted the registration code to be simpler, cleaner and more
 customizable.
