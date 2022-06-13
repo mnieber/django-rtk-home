@@ -1,7 +1,0 @@
--r requirements.txt
-ipython
-pudb
-pytest
-pytest-django
-pytest-html
-django-extensions
