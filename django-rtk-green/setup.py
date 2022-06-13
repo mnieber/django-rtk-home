@@ -3,8 +3,10 @@ from setuptools import find_packages, setup
 setup(
     name="django-rtk-green",
     version="0.1.0",
-    description="Extension of DGR that requires a password in the activation step",
-    url="https://github.com/mnieber/django-rtk-green",
+    description="Extension of django-rtk that requires a password in the activation step",
+    long_description="Extension of django-rtk that requires a password in the activation step",
+    long_description_content_type="text/x-rst",
+    url="https://github.com/mnieber/django-rtk-home/blob/main/django-rtk-green/README.md",
     author="Maarten Nieber",
     author_email="hallomaarten@yahoo.com",
     license="MIT",
