@@ -30,7 +30,8 @@ class RegisterAccount(mutations.RegisterAccount):
 
     @classmethod
     def send_email(cls, result, **kwargs):
-        mutations.send_activation_email(result, **kwargs)
+        if result.get("activation_token"):
+            mutations.send_activation_email(result, **kwargs)
 
     @classmethod
     def get_output_values(cls, result):
