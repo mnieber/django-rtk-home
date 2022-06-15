@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="django-rtk-green",
-    version="0.1.2",
+    version="0.2.0",
     description="Extension of django-rtk that requires a password in the activation step",
     long_description="Extension of django-rtk that requires a password in the activation step",
     long_description_content_type="text/x-rst",
