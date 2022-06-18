@@ -1,22 +1,24 @@
 import importlib
 import uuid
 
-import django_rtk_green.mutations.activateaccount
+import django_rtk_blue.mutations.activateaccount
 import pytest
 from django.contrib.auth import get_user_model
 from django.test import Client
 from django_rtk.utils import get_setting_or
-from django_rtk_green.models import ActivationToken, PasswordResetToken
-from django_rtk_green.tests.mutations import (
-    activate_account_mutation, activate_account_with_username_mutation,
-    change_password_mutation, register_account_mutation,
-    request_password_reset_mutation, reset_password_mutation)
+from django_rtk_blue.models import ActivationToken, PasswordResetToken
+from django_rtk_blue.tests.mutations import (
+    activate_account_mutation,
+    change_password_mutation,
+    register_account_mutation,
+    register_account_with_username_mutation,
+    request_password_reset_mutation,
+    reset_password_mutation,
+)
 
 activation_token_dict = dict(
     email="user@test.com",
     token=uuid.uuid4(),
-    accepts_terms=True,
-    terms_version_accepted="1.0.0",
 )
 
 
@@ -33,21 +35,39 @@ class TestSchema:
 
     @pytest.fixture()
     def user_account(self, client, activation_token):
-        query = activate_account_mutation(
-            activation_token=activation_token.token,
+        email = "tester@test.com"
+
+        query = register_account_mutation(
+            email=email,
             password="foobarbaz123",
+            accepts_terms=True,
+            terms_version_accepted="1.0.0",
             output_values=["success"],
         )
         response = client.post("/graphql/", dict(query=query))
-        assert response.json()["data"]["activateAccount"]["success"]
-        return get_user_model().objects.get(email=activation_token.email)
+        response_data = response.json()["data"]["registerAccount"]
+        assert response_data["success"]
+        activation_token = response_data["activationToken"]
+
+        query = activate_account_mutation(
+            activation_token=activation_token,
+            output_values=["success"],
+        )
+        response = client.post("/graphql/", dict(query=query))
+        response_data = response.json()["data"]["activateAccount"]
+        assert response_data["success"]
+
+        return get_user_model().objects.get(email=email)
 
     if not get_setting_or(False, "REQUIRE_USERNAME"):
 
         @pytest.mark.django_db()
         def test_register_account(self, client: Client):
+            email = "tester@test.com"
+
             query = register_account_mutation(
-                email="tester@test.com",
+                email=email,
+                password="foobarbaz123",
                 accepts_terms=True,
                 terms_version_accepted="1.0.0",
                 output_values=["success", "errors"],
@@ -55,37 +75,34 @@ class TestSchema:
             response = client.post("/graphql/", dict(query=query))
 
             # check that the response is as expected
-            assert response.json() == {
-                "data": {"registerAccount": {"success": True, "errors": {}}}
-            }
+            response_data = response.json()["data"]["registerAccount"]
+            assert response_data == {"success": True, "errors": {}}
 
-            activation_token = ActivationToken.objects.get(email="tester@test.com")
+            activation_token = ActivationToken.objects.get(email=email)
 
             query = activate_account_mutation(
                 activation_token=activation_token.token,
-                password="foobarbaz123",
                 output_values=["success", "errors"],
             )
             response = client.post("/graphql/", dict(query=query))
 
             # check that the response is as expected
-            assert response.json() == {
-                "data": {"activateAccount": {"success": True, "errors": {}}}
-            }
+            response_data = response.json()["data"]["activateAccount"]
+            assert response_data == {"success": True, "errors": {}}
+
+            # check that the user is active
+            assert get_user_model().objects.get(email=email).is_active
 
             query = request_password_reset_mutation(
-                email="tester@test.com", output_values=["success", "errors"]
+                email=email, output_values=["success", "errors"]
             )
             response = client.post("/graphql/", dict(query=query))
 
             # check that the response is as expected
-            assert response.json() == {
-                "data": {"requestPasswordReset": {"success": True, "errors": {}}}
-            }
+            response_data = response.json()["data"]["requestPasswordReset"]
+            assert response_data == {"success": True, "errors": {}}
 
-            password_reset_token = PasswordResetToken.objects.get(
-                email="tester@test.com"
-            )
+            password_reset_token = PasswordResetToken.objects.get(email=email)
 
             query = reset_password_mutation(
                 password_reset_token=password_reset_token.token,
@@ -100,7 +117,7 @@ class TestSchema:
             }
 
             query = change_password_mutation(
-                email="tester@test.com",
+                email=email,
                 password="foobarbaz456",
                 new_password="foobarbaz789",
                 output_values=["success", "errors"],
@@ -113,9 +130,10 @@ class TestSchema:
             }
 
         @pytest.mark.django_db()
-        def test_bad_email(self, client: Client):
+        def test_bad_email_or_password(self, client: Client):
             query = register_account_mutation(
                 email="tester.com",
+                password="foobarbaz123",
                 accepts_terms=True,
                 terms_version_accepted="1.0.0",
                 output_values=["success", "errors"],
@@ -132,13 +150,11 @@ class TestSchema:
                 }
             }
 
-        @pytest.mark.django_db()
-        def test_activate_account_with_bad_password(
-            self, client: Client, activation_token: ActivationToken
-        ):
-            query = activate_account_mutation(
-                activation_token=activation_token.token,
+            query = register_account_mutation(
+                email="tester.com",
                 password="foo",
+                accepts_terms=True,
+                terms_version_accepted="1.0.0",
                 output_values=["success", "errors"],
             )
             response = client.post("/graphql/", dict(query=query))
@@ -146,7 +162,7 @@ class TestSchema:
             # check that the response is as expected
             assert response.json() == {
                 "data": {
-                    "activateAccount": {
+                    "registerAccount": {
                         "success": False,
                         "errors": {"password": ["TOO_SHORT"]},
                     }
@@ -177,6 +193,7 @@ class TestSchema:
         def test_dangerously_expose_activation_token(self, client: Client, settings):
             query = register_account_mutation(
                 email="tester@test.com",
+                password="foobarbaz123",
                 accepts_terms=True,
                 terms_version_accepted="1.0.0",
                 output_values=["activationToken"],
@@ -230,6 +247,7 @@ class TestSchema:
 
             query = register_account_mutation(
                 email=user_account.email,
+                password="foobarbaz123",
                 accepts_terms=True,
                 terms_version_accepted="1.0.0",
                 output_values=["errors"],
@@ -248,30 +266,23 @@ class TestSchema:
     if get_setting_or(False, "REQUIRE_USERNAME"):
 
         @pytest.mark.django_db()
-        def test_activate_with_username(
+        def test_register_with_username(
             self, client: Client, activation_token, settings
         ):
-            importlib.reload(django_rtk_green.mutations.activateaccount)
+            importlib.reload(django_rtk_blue.mutations.registeraccount)
 
-            query = activate_account_mutation(
-                activation_token=activation_token.token,
-                password="foobarbaz123",
-                output_values=["success", "errors"],
-            )
-            response = client.post("/graphql/", dict(query=query))
+            email = "tester.com"
 
-            # check that the response is as expected
-            assert response.json()["errors"]
-
-            query = activate_account_with_username_mutation(
-                activation_token=activation_token.token,
-                password="foobarbaz123",
+            query = register_account_with_username_mutation(
+                email=email,
                 username="foobar",
+                password="foobarbaz123",
+                accepts_terms=True,
+                terms_version_accepted="1.0.0",
                 output_values=["success", "errors"],
             )
             response = client.post("/graphql/", dict(query=query))
 
             # check that the response is as expected
-            assert response.json() == {
-                "data": {"activateAccount": {"success": True, "errors": {}}}
-            }
+            assert not response.json()["errors"]
+            assert get_user_model().objects.get(email=email).username == "foobar"
