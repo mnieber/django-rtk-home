@@ -1,0 +1,1 @@
+FORCE_SERVE_STATIC = True

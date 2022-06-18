@@ -1,0 +1,21 @@
+{% block subject %}
+Welcome to django-rtk!
+{% endblock subject %}
+
+{% block text_body %}
+Please go to the following page to activate your account:
+{{ domain }}/activate-account/{{ result.activation_token }}
+
+The django-rtk team
+{% endblock text_body %}
+
+{% block html_body %}
+
+<p>Please go to the following page to activate your account:</p>
+<p><a href="{{ domain }}/activate-account/{{ result.activation_token }}">
+{{ domain }}/activate-account/{{ result.activation_token }}
+</a></p>
+
+<p>The django-rtk team</p>
+
+{% endblock html_body %}

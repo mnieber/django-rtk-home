@@ -1,0 +1,6 @@
+Django
+django-cors-headers
+django-environ
+graphene-django
+django-graphql-jwt
+psycopg2

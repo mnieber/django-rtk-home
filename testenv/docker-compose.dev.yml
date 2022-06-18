@@ -1,0 +1,33 @@
+version: "3.7"
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    command: sleep infinity
+    depends_on:
+      - postgres
+    env_file:
+      - ./env/dev/postgres.env
+      - ./env/dev/backend.env
+    environment:
+      - DJANGO_SETTINGS_MODULE=app.settings.dev
+    image: django_rtk_backend_dev
+    ports:
+      - 8000:8000
+    volumes:
+      - ./backend:/app/src
+      - backend_venv:/app/env
+  postgres:
+    depends_on: []
+    env_file:
+      - ./env/dev/postgres.env
+    image: postgres:11.5
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+volumes:
+  backend_venv: {}
+  postgres_data: {}

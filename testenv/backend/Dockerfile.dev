@@ -1,0 +1,23 @@
+FROM python:3
+
+RUN pip install --upgrade pip
+
+# install dev pkg dependencies
+RUN apt-get update && apt-get install -y \
+    fish \
+    make \
+    nano \
+    postgresql-client
+
+# install dev pip dependencies
+RUN pip3 install \
+    black \
+    isort \
+    pgcli==2.1.1 \
+    pip-tools
+
+# create a python venv that we can easily store inside a docker volume
+RUN python3 -m venv /app/env
+ENV PATH="/app/env/bin:${PATH}"
+
+WORKDIR /app/src

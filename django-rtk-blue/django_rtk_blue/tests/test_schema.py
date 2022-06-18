@@ -1,5 +1,4 @@
 import importlib
-import uuid
 
 import django_rtk_blue.mutations.activateaccount
 import pytest
@@ -16,11 +15,6 @@ from django_rtk_blue.tests.mutations import (
     reset_password_mutation,
 )
 
-activation_token_dict = dict(
-    email="user@test.com",
-    token=uuid.uuid4(),
-)
-
 
 class TestSchema:
     @pytest.fixture()
@@ -28,13 +22,7 @@ class TestSchema:
         return Client()
 
     @pytest.fixture()
-    def activation_token(self):
-        activation_token = ActivationToken(**activation_token_dict)
-        activation_token.save()
-        return activation_token
-
-    @pytest.fixture()
-    def user_account(self, client, activation_token):
+    def user_account(self, client):
         email = "tester@test.com"
 
         query = register_account_mutation(
@@ -42,15 +30,16 @@ class TestSchema:
             password="foobarbaz123",
             accepts_terms=True,
             terms_version_accepted="1.0.0",
-            output_values=["success"],
+            output_values=["success", "activationToken"],
         )
         response = client.post("/graphql/", dict(query=query))
         response_data = response.json()["data"]["registerAccount"]
         assert response_data["success"]
-        activation_token = response_data["activationToken"]
+
+        activation_token = ActivationToken.objects.get(email=email)
 
         query = activate_account_mutation(
-            activation_token=activation_token,
+            activation_token=activation_token.token,
             output_values=["success"],
         )
         response = client.post("/graphql/", dict(query=query))
@@ -151,7 +140,7 @@ class TestSchema:
             }
 
             query = register_account_mutation(
-                email="tester.com",
+                email="tester@test.com",
                 password="foo",
                 accepts_terms=True,
                 terms_version_accepted="1.0.0",
@@ -172,7 +161,7 @@ class TestSchema:
         @pytest.mark.django_db()
         def test_change_password_to_bad_password(self, client: Client, user_account):
             query = change_password_mutation(
-                email="user@test.com",
+                email="tester@test.com",
                 password="foobarbaz123",
                 new_password="foo",
                 output_values=["success", "errors"],
@@ -202,6 +191,7 @@ class TestSchema:
             response = client.post("/graphql/", dict(query=query))
             assert not response.json()["data"]["registerAccount"]["activationToken"]
 
+            query = query.replace("tester@test.com", "tester2@test.com")
             settings.DJANGO_RTK["DANGEROUSLY_EXPOSE_TOKENS"] = True
             response = client.post("/graphql/", dict(query=query))
             assert response.json()["data"]["registerAccount"]["activationToken"]
@@ -212,7 +202,7 @@ class TestSchema:
             self, client: Client, settings, user_account
         ):
             query = request_password_reset_mutation(
-                email="user@test.com",
+                email="tester@test.com",
                 output_values=["passwordResetToken"],
             )
 
@@ -266,9 +256,7 @@ class TestSchema:
     if get_setting_or(False, "REQUIRE_USERNAME"):
 
         @pytest.mark.django_db()
-        def test_register_with_username(
-            self, client: Client, activation_token, settings
-        ):
+        def test_register_with_username(self, client: Client, settings):
             importlib.reload(django_rtk_blue.mutations.registeraccount)
 
             email = "tester.com"

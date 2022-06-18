@@ -1,0 +1,8 @@
+-r requirements.base.txt
+django-extensions
+faker
+ipython
+pudb
+pytest
+pytest-django
+pytest-html
