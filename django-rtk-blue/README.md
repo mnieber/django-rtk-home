@@ -48,8 +48,7 @@ All endpoints return:
 
 ### registerAccount (mutations.RegisterAccount)
 
-This endpoint creates an activation token, but it does not create a user account.
-It sends the token to the user by email.
+This endpoint creates an inactive user account an activation token. It sends the token to the user by email.
 
 Takes arguments:
 
