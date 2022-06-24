@@ -1,6 +1,7 @@
 import graphene
 
-import users.schema
+import accounts.schema
+
 
 class GrapheneNonEmptyQuery(graphene.ObjectType):
     test_query = graphene.Field(graphene.String)
@@ -10,7 +11,7 @@ class GrapheneNonEmptyQuery(graphene.ObjectType):
 
 
 class Query(
-    users.schema.Query,
+    accounts.schema.Query,
     GrapheneNonEmptyQuery,
 ):
     pass

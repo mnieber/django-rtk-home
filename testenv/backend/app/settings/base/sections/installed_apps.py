@@ -22,6 +22,11 @@ LOCAL_APPS = [
     "api.apps.ApiConfig",
     "app.apps.AppConfig",
     f"{FLAVOUR}.apps.Config",
+    "django_rtk_later.apps.Config",
+    "django_rtk_upfront.apps.Config",
+    "django_rtk_password.apps.Config",
+    "django_rtk_magic_link.apps.Config",
+    "accounts.apps.AccountsConfig",
     "users.apps.UsersConfig",
 ]
 

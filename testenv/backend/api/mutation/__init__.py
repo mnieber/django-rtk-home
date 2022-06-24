@@ -1,6 +1,7 @@
 import graphene
 
-import users.schema
+import accounts.schema
+
 
 class GrapheneNonEmptyMutation(graphene.Mutation):
     class Arguments:
@@ -12,5 +13,5 @@ class GrapheneNonEmptyMutation(graphene.Mutation):
         return GrapheneNonEmptyMutation(test_mutation="Hello world")
 
 
-class Mutation(users.schema.Mutation, GrapheneNonEmptyMutation):
+class Mutation(accounts.schema.Mutation, GrapheneNonEmptyMutation):
     pass

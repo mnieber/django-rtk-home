@@ -1,6 +1,10 @@
 from .activateaccount import ActivateAccount  # noqa
 from .changepassword import ChangePassword  # noqa
 from .obtainjsonwebtoken import ObtainJSONWebToken  # noqa
-from .registeraccount import RegisterAccount, send_activation_email  # noqa
+from .registeraccount import RegisterAccount  # noqa
+from .registeraccount import send_activation_email  # noqa
+from .registeraccount import send_registered_again_email  # noqa
+from .requestmagiclink import RequestMagicLink  # noqa
 from .requestpasswordreset import RequestPasswordReset  # noqa
 from .resetpassword import ResetPassword  # noqa
+from .signinbymagiclink import SignInByMagicLink  # noqa

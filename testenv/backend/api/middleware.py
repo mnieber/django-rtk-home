@@ -6,12 +6,12 @@ from graphql import GraphQLError
 
 
 def get_query_crc(info):
-    if info.context.content_type == "application/json":
-        body = info.context.body.decode("utf-8")
-        query = json.loads(body)["query"]
-    else:
-        query = info.context.POST["query"]
-    return hashlib.md5(query.encode("utf-8")).hexdigest()
+    post_data = (
+        json.loads(info.context.body.decode("utf-8"))
+        if info.context.content_type == "application/json"
+        else info.context.POST
+    )
+    return hashlib.md5(post_data["query"].encode("utf-8")).hexdigest()
 
 
 class GraphqlCheckCRCMiddleware:

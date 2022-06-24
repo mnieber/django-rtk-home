@@ -8,6 +8,6 @@ def get_validator():
     global _validator
     if _validator is None:
         cls_path = get_setting_or_throw("VALIDATOR")
-        cls = import_class(cls_path)
+        cls = cls_path() if callable(cls_path) else import_class(cls_path)
         _validator = cls()
     return _validator

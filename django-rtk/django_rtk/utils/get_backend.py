@@ -8,6 +8,6 @@ def get_backend():
     global _backend
     if _backend is None:
         cls_path = get_setting_or_throw("BACKEND")
-        cls = import_class(cls_path)
+        cls = cls_path() if callable(cls_path) else import_class(cls_path)
         _backend = cls()
     return _backend

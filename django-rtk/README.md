@@ -51,13 +51,15 @@ The following example shows which settings are used:
 ```
 DJANGO_RTK = {
     "BACKEND": "django_rtk_green.backends.Backend",
-    "VALIDATOR": "django_rtk.validators.Validator",
+    "VALIDATOR": "django_rtk_green.validators.Validator",
     "EMAIL_TEMPLATES": {
-        "RegisterAccount": "users/activation_email.html",
-        "RequestPasswordReset": "users/password_reset_email.html",
+        "RegisterAccount": "registration/activation_email.html",
+        "RegisteredAgain": "registration/registered_again.html",
+        "RequestPasswordReset": "registration/password_reset_email.html",
     },
     "EMAIL_SUBJECTS": {
         "RegisterAccount": "Activate your BrandNewSite account",
+        "RegisteredAgain": "Someone (hopefully you) has registered with your email address",
         "RequestPasswordReset": "Reset your BrandNewSite password",
     },
     "EMAIL_CONTEXT": {
@@ -66,6 +68,8 @@ DJANGO_RTK = {
     "EMAIL_FROM": "noreply@brandnewsite.org",
 }
 ```
+
+Note that BACKEND and VALIDATOR may also be a callable that returns a class type.
 
 ### BACKEND
 
@@ -80,7 +84,7 @@ This package is a basis for implementing registration workflows. To understand
 how to do this, you will have to study the source code, using the following pointers:
 
 - inspect the code for the GraphQL endpoints in the `mutations` and `queries` directories
-- see how these endpoints are extended in the `django_rtk_green` pip package 
+- see how these endpoints are extended in the `django_rtk_green` pip package
 - each endpoint subclass can add GraphQL input and output values
 - `get_validator()` is used in `validate_args()` to validate input arguments
 - `get_backend()` is used in `run()` to do actual registration work

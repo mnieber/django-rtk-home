@@ -25,7 +25,8 @@ class RequestPasswordReset(graphene.Mutation):
 
         cls.on_result(errors, result, **kwargs)
 
-        password_reset_requested.send(sender=cls, **kwargs)
+        if not count_errors(errors):
+            password_reset_requested.send(sender=cls, **kwargs)
 
         output_params = cls.get_output_values(result)
         errors = reformat_errors(errors)

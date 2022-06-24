@@ -1,5 +1,7 @@
 import datetime
 
+from django_rtk.utils import import_class
+
 from .flavour import FLAVOUR
 
 AUTHENTICATION_BACKENDS = [
@@ -9,13 +11,16 @@ AUTHENTICATION_BACKENDS = [
 
 DJANGO_RTK = {
     "BACKEND": f"{FLAVOUR}.backends.Backend",
-    "VALIDATOR": "django_rtk.validators.Validator",
+    "VALIDATOR": f"{FLAVOUR}.validators.Validator",
     "EMAIL_TEMPLATES": {
-        "RegisterAccount": "users/activation_email.html",
-        "RequestPasswordReset": "users/password_reset_email.html",
+        "RegisterAccount": "accounts/activation_email.html",
+        "RegisteredAgain": "accounts/registered_again_email.html",
+        "RequestPasswordReset": "accounts/password_reset_email.html",
+        "RequestMagicLink": "accounts/magic_link_email.html",
     },
     "EMAIL_SUBJECTS": {
         "RegisterAccount": "Activate your django-rtk account",
+        "RegisteredAgain": "Someone (hopefully you) has registered with your email address",
         "RequestPasswordReset": "Reset your django-rtk password",
     },
     "EMAIL_CONTEXT": {
@@ -32,10 +37,13 @@ GRAPHQL_JWT = {
     "JWT_ALLOW_ANY_CLASSES": [
         f"{FLAVOUR}.mutations.RegisterAccount",
         f"{FLAVOUR}.mutations.ActivateAccount",
-        f"{FLAVOUR}.mutations.RequestPasswordReset",
-        f"{FLAVOUR}.mutations.ResetPassword",
         f"{FLAVOUR}.mutations.ObtainJSONWebToken",
         f"{FLAVOUR}.queries.Me",
+        "django_rtk_password.mutations.RequestPasswordReset",
+        "django_rtk_password.mutations.ResetPassword",
+        "django_rtk_password.mutations.ChangePassword",
+        "django_rtk_magic_link.mutations.RequestResetMagicLink",
+        "django_rtk_magic_link.mutations.SignInByMagicLink",
         "graphql_jwt.mutations.Verify",
         "graphql_jwt.mutations.Refresh",
         "graphql_jwt.mutations.Revoke",

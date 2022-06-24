@@ -66,3 +66,16 @@ def send_activation_email(result, email, **kwargs):
             template=template,
             context=dict(**context, kwargs=kwargs, result=result),
         )
+
+
+def send_registered_again_email(result, email, **kwargs):
+    template = get_setting_or_throw("EMAIL_TEMPLATES", "RegisteredAgain")
+    subject = get_setting_or_throw("EMAIL_SUBJECTS", "RegisteredAgain")
+    context = get_setting_or({}, "EMAIL_CONTEXT")
+    if subject and template:
+        send_email(
+            to_email=email,
+            subject=subject,
+            template=template,
+            context=dict(**context, kwargs=kwargs, result=result),
+        )
