@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="django-rtk-green",
-    version="0.3.0",
+    version="0.4.0",
     description="Extension of django-rtk that combines django-rtk-later, django-rtk-password and django-rtk-magic-link",
     long_description="Extension of django-rtk that combines django-rtk-later, django-rtk-password and django-rtk-magic-link",
     long_description_content_type="text/x-rst",
@@ -16,6 +16,7 @@ setup(
     data_files=[],
     cmdclass={},
     install_requires=[
+        "django-rtk",
         "django-rtk-later",
         "django-rtk-password",
         "django-rtk-magic-link",
