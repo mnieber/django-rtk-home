@@ -9,7 +9,7 @@ from django_rtk.utils import (
 )
 
 
-class RequestMagicLink(mutations.RegisterAccount):
+class RequestMagicLink(mutations.RequestMagicLink):
     class Arguments:
         email = graphene.String()
 
