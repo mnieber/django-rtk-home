@@ -39,7 +39,7 @@ class Backend:
             return result
 
         activation_token = ActivationToken.objects.filter(
-            token=uuid.UUID(activation_token)
+            token=uuid.UUID(activation_token.token.hex)
         ).first()
         if activation_token:
             user = get_user_model().objects.filter(email=activation_token.email).first()
