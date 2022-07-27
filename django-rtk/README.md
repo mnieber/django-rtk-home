@@ -44,6 +44,11 @@ A particular registration workflow is achieved by subclassing the endpoints
 in this package: the `RegisterAccount`, `ActivateAccount`, `RequestPasswordReset`,
 `ResetPassword`, `ChangePassword` mutation and the `Me` query.
 
+### Email
+
+Emails are sent using `django-template-email`. This means that your email template should contain
+a `subject`, `text_body` and `html_body` block.
+
 ## Settings
 
 The following example shows which settings are used:
@@ -56,11 +61,6 @@ DJANGO_RTK = {
         "RegisterAccount": "registration/activation_email.html",
         "RegisteredAgain": "registration/registered_again.html",
         "RequestPasswordReset": "registration/password_reset_email.html",
-    },
-    "EMAIL_SUBJECTS": {
-        "RegisterAccount": "Activate your BrandNewSite account",
-        "RegisteredAgain": "Someone (hopefully you) has registered with your email address",
-        "RequestPasswordReset": "Reset your BrandNewSite password",
     },
     "EMAIL_CONTEXT": {
         "any key": "value pair you want to use in your templates",

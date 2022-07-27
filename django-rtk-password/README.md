@@ -30,9 +30,6 @@ DJANGO_RTK = {
     "EMAIL_TEMPLATES": {
         "RequestPasswordReset": "accounts/password_reset_email.html",
     },
-    "EMAIL_SUBJECTS": {
-        "RequestPasswordReset": "Reset your BrandNewSite password",
-    },
     "EMAIL_FROM": "noreply@brandnewsite.org",
 }
 ```

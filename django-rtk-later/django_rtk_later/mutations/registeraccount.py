@@ -16,6 +16,10 @@ class RegisterAccount(mutations.RegisterAccount):
         terms_version_accepted = graphene.String(
             required=False, default_value=get_setting_or("1.0.0", "TERMS_VERSION")
         )
+        activation_email_template = graphene.String(required=False, default_value="")
+        registered_again_email_template = graphene.String(
+            required=False, default_value=""
+        )
 
     activation_token = graphene.String()
 
@@ -35,10 +39,10 @@ class RegisterAccount(mutations.RegisterAccount):
         return result
 
     @classmethod
+    def get_output_values(cls, result):
+        return {"activation_token": extract_token(result, "activation_token")}
+
+    @classmethod
     def send_email(cls, result, **kwargs):
         if result.get("activation_token"):
             mutations.send_activation_email(result, **kwargs)
-
-    @classmethod
-    def get_output_values(cls, result):
-        return {"activation_token": extract_token(result, "activation_token")}

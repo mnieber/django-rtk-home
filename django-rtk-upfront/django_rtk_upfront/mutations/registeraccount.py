@@ -41,10 +41,10 @@ class RegisterAccount(mutations.RegisterAccount):
         return result
 
     @classmethod
+    def get_output_values(cls, result):
+        return {"activation_token": extract_token(result, "activation_token")}
+
+    @classmethod
     def send_email(cls, result, **kwargs):
         if result.get("activation_token"):
             mutations.send_activation_email(result, **kwargs)
-
-    @classmethod
-    def get_output_values(cls, result):
-        return {"activation_token": extract_token(result, "activation_token")}

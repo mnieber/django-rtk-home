@@ -56,26 +56,26 @@ class RegisterAccount(graphene.Mutation):
 
 
 def send_activation_email(result, email, **kwargs):
-    template = get_setting_or_throw("EMAIL_TEMPLATES", "RegisterAccount")
-    subject = get_setting_or_throw("EMAIL_SUBJECTS", "RegisterAccount")
+    template = kwargs.get("activation_email_template") or get_setting_or_throw(
+        "EMAIL_TEMPLATES", "RegisterAccount"
+    )
     context = get_setting_or({}, "EMAIL_CONTEXT")
-    if subject and template:
+    if template:
         send_email(
             to_email=email,
-            subject=subject,
             template=template,
             context=dict(**context, kwargs=kwargs, result=result),
         )
 
 
 def send_registered_again_email(result, email, **kwargs):
-    template = get_setting_or_throw("EMAIL_TEMPLATES", "RegisteredAgain")
-    subject = get_setting_or_throw("EMAIL_SUBJECTS", "RegisteredAgain")
+    template = kwargs.get("registered_again_email_template") or get_setting_or_throw(
+        "EMAIL_TEMPLATES", "RegisteredAgain"
+    )
     context = get_setting_or({}, "EMAIL_CONTEXT")
-    if subject and template:
+    if template:
         send_email(
             to_email=email,
-            subject=subject,
             template=template,
             context=dict(**context, kwargs=kwargs, result=result),
         )

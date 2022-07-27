@@ -51,15 +51,18 @@ class RequestPasswordReset(graphene.Mutation):
 
     @classmethod
     def send_email(cls, result, email, **kwargs):
-        template = get_setting_or(None, "EMAIL_TEMPLATES", "RequestPasswordReset")
-        subject = get_setting_or(None, "EMAIL_SUBJECTS", "RequestPasswordReset")
-        context = get_setting_or({}, "EMAIL_CONTEXT")
-        if subject and template:
-            send_email(
-                to_email=email,
-                subject=subject,
-                template=template,
-                context=dict(
-                    **context, kwargs=dict(email=email, **kwargs), result=result
-                ),
-            )
+        # The child class may call 'send_password_reset_email'
+        pass
+
+
+def send_password_reset_email(result, email, **kwargs):
+    template = kwargs.get("password_reset_email_template") or get_setting_or(
+        None, "EMAIL_TEMPLATES", "RequestPasswordReset"
+    )
+    context = get_setting_or({}, "EMAIL_CONTEXT")
+    if template:
+        send_email(
+            to_email=email,
+            template=template,
+            context=dict(**context, kwargs=dict(email=email, **kwargs), result=result),
+        )

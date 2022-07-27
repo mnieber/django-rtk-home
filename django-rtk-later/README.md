@@ -31,9 +31,6 @@ DJANGO_RTK = {
     "EMAIL_TEMPLATES": {
         "RegisterAccount": "accounts/activation_email.html",
     },
-    "EMAIL_SUBJECTS": {
-        "RegisterAccount": "Activate your BrandNewSite account",
-    },
     "EMAIL_FROM": "noreply@brandnewsite.org",
 }
 ```

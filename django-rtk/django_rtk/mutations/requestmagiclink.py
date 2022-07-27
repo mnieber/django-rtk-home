@@ -51,15 +51,18 @@ class RequestMagicLink(graphene.Mutation):
 
     @classmethod
     def send_email(cls, result, email, **kwargs):
-        template = get_setting_or(None, "EMAIL_TEMPLATES", "RequestMagicLink")
-        subject = get_setting_or(None, "EMAIL_SUBJECTS", "RequestMagicLink")
-        context = get_setting_or({}, "EMAIL_CONTEXT")
-        if subject and template:
-            send_email(
-                to_email=email,
-                subject=subject,
-                template=template,
-                context=dict(
-                    **context, kwargs=dict(email=email, **kwargs), result=result
-                ),
-            )
+        # The child class may call 'send_magic_link_email'
+        pass
+
+
+def send_magic_link_email(result, email, **kwargs):
+    template = kwargs.get("magic_link_email_template") or get_setting_or(
+        None, "EMAIL_TEMPLATES", "RequestMagicLink"
+    )
+    context = get_setting_or({}, "EMAIL_CONTEXT")
+    if template:
+        send_email(
+            to_email=email,
+            template=template,
+            context=dict(**context, kwargs=dict(email=email, **kwargs), result=result),
+        )

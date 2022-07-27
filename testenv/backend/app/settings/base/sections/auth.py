@@ -18,11 +18,6 @@ DJANGO_RTK = {
         "RequestPasswordReset": "accounts/password_reset_email.html",
         "RequestMagicLink": "accounts/magic_link_email.html",
     },
-    "EMAIL_SUBJECTS": {
-        "RegisterAccount": "Activate your django-rtk account",
-        "RegisteredAgain": "Someone (hopefully you) has registered with your email address",
-        "RequestPasswordReset": "Reset your django-rtk password",
-    },
     "EMAIL_CONTEXT": {
         "domain": "www.djangortk.org",
     },

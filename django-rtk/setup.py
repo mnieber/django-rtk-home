@@ -15,7 +15,12 @@ setup(
     entry_points={},
     data_files=[],
     cmdclass={},
-    install_requires=["Django", "graphene-django", "django-graphql-jwt"],
+    install_requires=[
+        "Django",
+        "graphene-django",
+        "django-graphql-jwt",
+        "django-templated-mail",
+    ],
     zip_safe=False,
     python_requires=">=3.6",
 )
