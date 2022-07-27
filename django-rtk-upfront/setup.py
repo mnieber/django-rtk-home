@@ -2,7 +2,7 @@ from setuptools import find_packages, setup
 
 setup(
     name="django-rtk-upfront",
-    version="0.4.0",
+    version="0.5.0",
     description="Extension of django-rtk that requires a password in the registration step",
     long_description="Extension of django-rtk that requires a password in the registration step",
     long_description_content_type="text/x-rst",
