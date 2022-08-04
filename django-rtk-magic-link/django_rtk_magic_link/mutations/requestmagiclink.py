@@ -37,4 +37,4 @@ class RequestMagicLink(mutations.RequestMagicLink):
     @classmethod
     def send_email(cls, result, email, **kwargs):
         if result.get("magic_link_token"):
-            mutations.send_magic_link_email(result, **kwargs)
+            mutations.send_magic_link_email(result, email, **kwargs)

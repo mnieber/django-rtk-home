@@ -36,4 +36,4 @@ class RequestPasswordReset(mutations.RequestPasswordReset):
     @classmethod
     def send_email(cls, result, email, **kwargs):
         if result.get("password_reset_token"):
-            mutations.send_password_reset_email(result, **kwargs)
+            mutations.send_password_reset_email(result, email, **kwargs)
