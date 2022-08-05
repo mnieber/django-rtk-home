@@ -4,7 +4,7 @@
 
 The django-rtk package provides a skeleton for implementing
 account registration. If you are looking for a complete registration solution,
-check out django-rtk-green.
+check out django-rtk-green or django-rtk-blue.
 I created this package because I was unhappy with existing graphl-based solutions.
 In particular, I wanted the registration code to be simpler, cleaner and more
 customizable.
@@ -42,11 +42,11 @@ Different registration workflows can use the same backend (see: Compatibility be
 
 A particular registration workflow is achieved by subclassing the endpoints
 in this package: the `RegisterAccount`, `ActivateAccount`, `RequestPasswordReset`,
-`ResetPassword`, `ChangePassword` mutation and the `Me` query.
+`ResetPassword`, `ChangePassword`, `RequestMagicLink` mutation and the `Me` query.
 
 ### Email
 
-Emails are sent using `django-template-email`. This means that your email template should contain
+Emails are sent using `django-templated-email`. This means that your email template should contain
 a `subject`, `text_body` and `html_body` block.
 
 ## Settings
