@@ -28,9 +28,9 @@ class RegisterAccount(graphene.Mutation):
 
         account_registered.send(sender=cls, **kwargs)
 
-        output_params = cls.get_output_values(result)
+        output_values = cls.get_output_values(result)
         errors = reformat_errors(errors)
-        return cls(success=not errors, errors=errors, **output_params)
+        return cls(success=not errors, errors=errors, **output_values)
 
     @classmethod
     def run(cls, errors, **kwargs):

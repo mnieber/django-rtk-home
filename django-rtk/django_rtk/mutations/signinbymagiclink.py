@@ -22,9 +22,9 @@ class SignInByMagicLink(graphene.Mutation):
         if not count_errors(errors):
             signed_in_by_magic_link.send(sender=cls, **kwargs)
 
-        output_params = cls.get_output_values(result)
+        output_values = cls.get_output_values(result)
         errors = reformat_errors(errors)
-        return cls(success=not errors, errors=errors, **output_params)
+        return cls(success=not errors, errors=errors, **output_values)
 
     @classmethod
     def run(cls, errors, request, **kwargs):
