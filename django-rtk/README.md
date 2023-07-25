@@ -67,7 +67,8 @@ can be used in different registration endpoints. The registration endpoints defi
 the API for the different registeration steps, but they do not
 contain the logic for these steps. Instead, they forward the work to the backend
 object. This way, we can define different workflows that - below the surface -
-rely on the same backend.
+rely on the same backend. Note that the implementation of the backend is supplied
+by the concrete registration solution.
 
 ## Signals
 
@@ -80,6 +81,9 @@ The endpoints may send various signals that are defined in the `django_rtk.signa
 - password_changed
 - magic_link_sent
 - signed_in_by_magic_link
+
+These signals are not necessary for the registration workflow itself, but they are useful
+for integration with other parts of your application.
 
 ## Validation
 
@@ -164,6 +168,16 @@ Below, we describe each shell endpoint. Keep in mind that the fullfledged regist
 extend these shells. Also, it's advised to directly check the source code of each endpoint. Since the endpoint
 is merely a shell, this source code is easy to read and gives you a good idea of how the endpoint is intended
 to be used.
+
+Note that all endpoints return:
+
+- success (boolean)
+- errors (map of fieldname to list of error codes)
+
+The exact error codes that may be returned depend on the concrete registration solution (see for
+example [django-rtk-green](https://github.com/mnieber/django-rtk-home/tree/main/django-rtk-green/README.md)
+and
+[django-rtk-blue](https://github.com/mnieber/django-rtk-home/tree/main/django-rtk-blue/README.md)).
 
 ### [RegisterAccount](https://github.com/mnieber/django-rtk-home/tree/main/django-rtk/django_rtk/mutations/registeraccount.py)
 

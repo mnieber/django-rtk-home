@@ -1,71 +1,91 @@
 # django-rtk-later
 
-This package is an implementation of the registration functions in django-rtk that
-asks the user to set their password when they activate their account.
+This package implements the `RegisterAccount` and `ActivateAccount` endpoints from django-rtk.
+It asks the user to set their password when they activate their account (as opposed to asking
+for the password when the user registers).
+
+Since this package only implements `RegisterAccount` and `ActivateAccount`, you should combine
+this package with other packages to obtain a complete implementation of all django-rtk endpoints.
+This is done in `django-rtk-green` and `django-rtk-blue`.
 
 ## Package specific settings
 
-All settings are stored in `settings.DJANGO_RTK`. Below, we use
-`FOO` as a shortcut for `settings.DJANGO_RTK['FOO']`.
+This package uses various settings from `settings.DJANGO_RTK`:
 
-### DANGEROUSLY_EXPOSE_TOKENS (False)
-
-This setting determines if endpoints return activation tokens. Only
-use this setting for testing, never in production.
-
-### HIDE_ACCOUNT_EXISTENCE (True)
-
-If this setting is `True` then the package will do its best to hide information from the
-user about which emails are known. For example, when you register and the email is already taken,
-it will just ignore the request and not return an error.
-
-## Settings inherited from django-rtk
-
-The following example shows how the settings inherited from the
-django-rtk package can be set up:
-
-```
+```py
 DJANGO_RTK = {
-    "BACKEND": "django_rtk_later.backends.Backend",
-    "VALIDATOR": "django_rtk_later.validators.Validator",
-    "EMAIL_TEMPLATES": {
-        "RegisterAccount": "accounts/activation_email.html",
+    'DANGEROUSLY_EXPOSE_TOKENS': False
+    'HIDE_ACCOUNT_EXISTENCE': True
+    'BACKEND': ...
+    'VALIDATOR': ...
+    'EMAIL_TEMPLATES': {
+        'RegisterAccount': 'accounts/activation_email.html',
     },
-    "EMAIL_FROM": "noreply@brandnewsite.org",
 }
 ```
 
+For a complete description of these settings, please consult the documentation of
+[django-rtk-green](https://github.com/mnieber/django-rtk-home/tree/main/django-rtk-green/README.md)
+and
+[django-rtk-blue](https://github.com/mnieber/django-rtk-home/tree/main/django-rtk-blue/README.md)
+
+## The `create_user(activation_token, **kwargs)` function
+
+This function calls `get_user_model().objects.create_user` with the following arguments:
+
+- email (taken from the activation_token)
+- username (taken from `kwargs`, defaults to activation_token.email)
+- accepts_terms (taken from the activation_token)
+- terms_version_accepted (taken from the activation_token)
+- the remaining keyword arguments in `kwargs`
+
+Your user model needs to provide a create_user function that accepts these arguments. The create_user
+function that you provide is responsible for creating the user (the django-rtk-later package does not
+take care of that).
+
+## The [Backend](https://github.com/mnieber/django-rtk-home/blob/main/django-rtk-later/django_rtk_later/backends.py)
+
+The django-rtk-later package offers a `Backend` class that implements `register_account` and
+`activate_account`.
+
+### The `register_account(email, accepts_terms, terms_version_accepted)` function
+
+This function checks if the given email is available. If it is available then it creates an
+activation token (`models.ActivationToken`) that records the email and the terms version that was
+accepted.
+
+### The `activate_account(activation_token, **kwargs)` function
+
+This function gets the activation token instance (`models.ActivationToken`) from the database and
+calls `create_user` with this token instance and all given keyword arguments in `kwargs`.
+
 ## Endpoints
 
-All endpoints return:
+### RegisterAccount (mutations.RegisterAccount)
 
-- success (boolean)
-- errors (map of fieldname to list of error codes)
+This endpoint takes the following inputs:
 
-### registerAccount (mutations.RegisterAccount)
+- email
+- accepts terms (boolean)
+- terms_version_accepted (taken from `settings.DJANGO_RTK['TERMS_VERSION']`, defaults to "1.0.0")
 
-This endpoint creates an activation token, but it does not create a user account.
+It creates an activation token, but it does not create a user account.
 It sends the token to the user by email.
 
-Takes arguments:
-
-- `email`
-
-Returns:
+It returns:
 
 - `activation_token` if `DANGEROUSLY_EXPOSE_TOKENS`
 - `errors['email'] = ['INVALID_EMAIL']` if the email is not valid
 - `errors['email'] = ['ALREADY_TAKEN']` if the email is taken and not `HIDE_ACCOUNT_EXISTENCE`
 
-### activateAccount (mutations.ActivateAccount)
+### ActivateAccount (mutations.ActivateAccount)
 
-This endpoint verifies the activation token and creates the user account with the given password.
-It then deletes the activation token.
+This endpoint takes the following inputs:
 
-Takes arguments:
+- activation_token (UUID)
 
-- `activation_token`
-- `password`
+This endpoint gets the `ActivationToken` instance from the database and calls
+create_user_account with this token. It then deletes the activation token instance.
 
 Returns:
 
