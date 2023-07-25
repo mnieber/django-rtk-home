@@ -1,8 +1,12 @@
 import uuid
 
-from django.contrib.auth import get_user_model
-from django_rtk.utils import count_errors, get_errors
-
+from django_rtk.utils import (
+    count_errors,
+    email_already_taken,
+    get_errors,
+    get_setting_or,
+    username_already_taken,
+)
 from django_rtk_later.models import ActivationToken
 from django_rtk_later.utils import create_user
 
@@ -15,7 +19,7 @@ class Backend:
         if count_errors(errors):
             return result
 
-        if get_user_model().objects.filter(email=email).exists():
+        if email_already_taken(email):
             get_errors(errors, "email").append("ALREADY_TAKEN")
             return result
 
@@ -33,6 +37,13 @@ class Backend:
         result = dict(user=None)
         if count_errors(errors):
             return result
+
+        if get_setting_or(False, "REQUIRE_USERNAME"):
+            username = kwargs["username"]
+            if get_setting_or(True, "REQUIRE_USERNAME_TO_BE_UNIQUE"):
+                if username_already_taken(username):
+                    get_errors(errors, "username").append("ALREADY_TAKEN")
+                    return result
 
         activation_token = ActivationToken.objects.filter(
             token=uuid.UUID(activation_token)

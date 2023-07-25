@@ -171,8 +171,8 @@ to be used.
 
 Note that all endpoints return:
 
-- success (boolean)
-- errors (map of fieldname to list of error codes)
+- success (a boolean)
+- errors (a map of fieldname to list of error codes)
 
 The exact error codes that may be returned depend on the concrete registration solution (see for
 example [django-rtk-green](https://github.com/mnieber/django-rtk-home/tree/main/django-rtk-green/README.md)
