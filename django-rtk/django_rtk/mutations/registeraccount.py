@@ -1,13 +1,6 @@
 import graphene
 from django_rtk.signals import account_registered
-from django_rtk.utils import (
-    count_errors,
-    get_backend,
-    get_setting_or,
-    get_setting_or_throw,
-    reformat_errors,
-    send_email,
-)
+from django_rtk.utils import count_errors, get_backend, reformat_errors
 from graphene.types.generic import GenericScalar
 
 
@@ -51,31 +44,4 @@ class RegisterAccount(graphene.Mutation):
 
     @classmethod
     def send_email(cls, result, **kwargs):
-        # The child class may call 'send_activation_email'
         pass
-
-
-def send_activation_email(result, email, **kwargs):
-    template = kwargs.get("activation_email_template") or get_setting_or_throw(
-        "EMAIL_TEMPLATES", "RegisterAccount"
-    )
-    context = get_setting_or({}, "EMAIL_CONTEXT")
-    if template:
-        send_email(
-            to_email=email,
-            template=template,
-            context=dict(**context, kwargs=kwargs, result=result),
-        )
-
-
-def send_registered_again_email(result, email, **kwargs):
-    template = kwargs.get("registered_again_email_template") or get_setting_or_throw(
-        "EMAIL_TEMPLATES", "RegisteredAgain"
-    )
-    context = get_setting_or({}, "EMAIL_CONTEXT")
-    if template:
-        send_email(
-            to_email=email,
-            template=template,
-            context=dict(**context, kwargs=kwargs, result=result),
-        )

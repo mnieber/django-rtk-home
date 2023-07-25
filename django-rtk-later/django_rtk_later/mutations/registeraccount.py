@@ -5,7 +5,9 @@ from django_rtk.utils import (
     get_backend,
     get_errors,
     get_setting_or,
+    get_setting_or_throw,
     get_validator,
+    send_email,
 )
 
 
@@ -34,7 +36,7 @@ class RegisterAccount(mutations.RegisterAccount):
         hide_account_existence = get_setting_or(True, "HIDE_ACCOUNT_EXISTENCE")
         if hide_account_existence and "ALREADY_TAKEN" in get_errors(errors, "email"):
             get_errors(errors, "email").remove("ALREADY_TAKEN")
-            mutations.send_registered_again_email(result, **kwargs)
+            send_registered_again_email(result, **kwargs)
 
         return result
 
@@ -45,4 +47,30 @@ class RegisterAccount(mutations.RegisterAccount):
     @classmethod
     def send_email(cls, result, email, **kwargs):
         if result.get("activation_token"):
-            mutations.send_activation_email(result, email, **kwargs)
+            send_activation_email(result, email, **kwargs)
+
+
+def send_activation_email(result, email, **kwargs):
+    template = kwargs.get("activation_email_template") or get_setting_or_throw(
+        "EMAIL_TEMPLATES", "RegisterAccount"
+    )
+    context = get_setting_or({}, "EMAIL_CONTEXT")
+    if template:
+        send_email(
+            to_email=email,
+            template=template,
+            context=dict(**context, kwargs=kwargs, result=result),
+        )
+
+
+def send_registered_again_email(result, email, **kwargs):
+    template = kwargs.get("registered_again_email_template") or get_setting_or_throw(
+        "EMAIL_TEMPLATES", "RegisteredAgain"
+    )
+    context = get_setting_or({}, "EMAIL_CONTEXT")
+    if template:
+        send_email(
+            to_email=email,
+            template=template,
+            context=dict(**context, kwargs=kwargs, result=result),
+        )
