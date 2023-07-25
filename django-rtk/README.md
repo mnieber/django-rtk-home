@@ -69,24 +69,61 @@ contain the logic for these steps. Instead, they forward the work to the backend
 object. This way, we can define different workflows that - below the surface -
 rely on the same backend.
 
-## Endpoint building blocks
+## Signals
 
-Before we list the endpoints, let's look at some building blocks that most
-endpoints rely on.
+The endpoints may send various signals that are defined in the `django_rtk.signals` module:
 
-### The `get_setting_or` and `get_setting_or_throw` functions
+- account_registered
+- account_activated
+- password_reset_requested
+- password_reset
+- password_changed
+- magic_link_sent
+- signed_in_by_magic_link
+
+## Validation
+
+The django-rtk framework offers a `Validator` class that concrete solutions can use to validate input arguments.
+This `Validator` class has functions `validate_email`, `validate_password` and `validate_username`. However, the
+concrete validation of input arguments is not the responsibility of django-rtk, but rather of the concrete
+registatration solution (such as `django-rtk-green`).
+
+## Utilities
+
+Django-rtk offers a number of utility functions that are useful for most concrete registration solutions.
+
+### The `send_email()` function
+
+This function sends an email where the `from` field is determined by `settings.DJANGO_RTK['EMAIL_FROM]`.
+
+### The `get_backend()` function
+
+This function returns the registration backend object. The backend implements
+the main registration functions, such as register_account, activate_account, etc.
+The choice of the backend depends on the `settings.DJANGO_RTK["backend"]` setting.
+For example, you can set this to "django_rtk_green.backends.Backend".
+
+### The `extract_token()` function
+
+This function is used to extract tokens from the output of the `Endpoint.run` function so they can
+be returned to the caller. This is useful for debugging purposes. Importantly, it only returns the
+token if `settings.DJANGO_RTK['DANGEROUSLY_EXPOSE_TOKENS']` is true.
+
+### The `get_validator()` function
+
+This function returns the `Validator` object as configured by `settings.DJANGO_RTK['VALIDATOR]`.
+
+### The `get_setting_or()` and `get_setting_or_throw()` functions
 
 All django-rtk based registraton solutions store their settings in the `settings.DJANGO_RTK`
 dictionary. The `get_setting_or` function reads a setting from this dictionary (falling back
 to a default value if the setting is not found). The `get_setting_or_throw` function is similar
 but throws an exception if the setting is not found.
 
-### The `get_backend` function
+## Endpoint building blocks
 
-This function returns the registration backend object. The backend implements
-the main registration functions, such as register_account, activate_account, etc.
-The choice of the backend depends on the `settings.DJANGO_RTK["backend"]` setting.
-For example, you can set this to "django_rtk_green.backends.Backend".
+Before we list the endpoints, let's look at some building blocks that most
+endpoints rely on.
 
 ### The `Endpoint.mutate` function
 
@@ -120,18 +157,6 @@ must be returned to the caller of the endpoint.
 During the execution of the endpoint, any errors are collected in the `errors` dictionary. The `reformat_errors`
 function is called before returning these errors to the caller. It transforms the error codes from snake case
 to camel case.
-
-## Signals
-
-The endpoints may send various signals that are defined in the `django_rtk.signals` module:
-
-- account_registered
-- account_activated
-- password_reset_requested
-- password_reset
-- password_changed
-- magic_link_sent
-- signed_in_by_magic_link
 
 ## Endpoints
 
